@@ -1,0 +1,26 @@
+﻿<!doctype html>
+<html>
+<head>
+<style>
+    body {
+        font-family:monospace;
+    }
+</style>
+</head>
+<body>
+    <p>
+        Change detected in the <b>{{Domain}}</b> certificate.<br />
+    </p>    
+    <pre>
+New certificate details:
+    Thumbprint:        <b>{{NewThumbprint}}</b>
+    Public Key (hash): <b>{{NewPublicKey}}</b>
+    Valid:             <b>{{NewValidFrom}} to {{NewValidTo}}</b>
+
+Previous certificate details:
+    Thumbprint:        <b>{{PreviousThumbprint}}</b>
+    Public Key (hash): <b>{{PreviousPublicKey}}</b>
+    Valid:             <b>{{PreviousValidFrom}} to {{PreviousValidTo}}</b>
+    </pre>
+</body>
+</html>

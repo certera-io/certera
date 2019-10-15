@@ -1,0 +1,106 @@
+﻿@page
+@model Certera.Web.Pages.Certificates.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    ViewData["ActivePage"] = ManageNavPages.Certificates;
+}
+
+<div class="content-title">
+    <i class="icon-certificate page-icon"></i> Certificates - Create
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">List</a>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AcmeCertificate.ChallengeType" value="http-01" />
+            <div>
+                <label asp-for="AcmeCertificate.Name"></label>
+                <div>
+                    <small class="text-muted">(e.g. example.com or prod-api-01)</small>
+                </div>
+                <input asp-for="AcmeCertificate.Name" />
+                <span asp-validation-for="AcmeCertificate.Name" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.Subject"></label>
+                <div>
+                    <small class="text-muted">(e.g. example.com)</small>
+                </div>
+                <input asp-for="AcmeCertificate.Subject" />
+                <span asp-validation-for="AcmeCertificate.Subject" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.SANs"></label>
+                <div>
+                    <small class="text-muted">(e.g. www.example.com, stg.example.com)</small>
+                </div>
+                <textarea class="form-control" asp-for="AcmeCertificate.SANs"></textarea>
+                <span asp-validation-for="AcmeCertificate.SANs" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Key</label>
+                <div>
+                    <small class="text-muted">(choose an existing key or a key generation strategy)</small>
+                </div>
+                @await Component.InvokeAsync("KeySelect", new { name = "AcmeCertificate.KeyId" })
+            </div>
+            <div>
+                <label>ACME Account</label>
+                <select asp-for="AcmeCertificate.AcmeAccountId" asp-items="ViewBag.AcmeAccountId"></select>
+            </div>
+
+            <hr />
+            <h3>CSR Details</h3>
+            <div>
+                <label asp-for="AcmeCertificate.CsrCommonName"></label>
+                <div>
+                    <small class="text-muted">(e.g. example.com)</small>
+                </div>
+                <input asp-for="AcmeCertificate.CsrCommonName" />
+                <span asp-validation-for="AcmeCertificate.CsrCommonName" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.CsrOrganization"></label>
+                <div>
+                    <small class="text-muted">(Example Inc.)</small>
+                </div>
+                <input asp-for="AcmeCertificate.CsrOrganization" />
+                <span asp-validation-for="AcmeCertificate.CsrOrganization" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.CsrOrganizationUnit"></label>
+                <div>
+                    <small class="text-muted">(e.g. HR, Finance, IT - often times, it's left blank)</small>
+                </div>
+                <input asp-for="AcmeCertificate.CsrOrganizationUnit" />
+                <span asp-validation-for="AcmeCertificate.CsrOrganizationUnit" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.CsrCountryName"></label>
+                <div>
+                    <small class="text-muted">(2 letter ISO country code)</small>
+                </div>
+                <input asp-for="AcmeCertificate.CsrCountryName" />
+                <span asp-validation-for="AcmeCertificate.CsrCountryName" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.CsrState"></label>
+                <div>
+                    <small class="text-muted">(full state/province/region name)</small>
+                </div>
+                <input asp-for="AcmeCertificate.CsrState" />
+                <span asp-validation-for="AcmeCertificate.CsrState" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AcmeCertificate.CsrLocality"></label>
+                <input asp-for="AcmeCertificate.CsrLocality" />
+                <span asp-validation-for="AcmeCertificate.CsrLocality" class="text-danger"></span>
+            </div>
+            <div>
+                <button type="submit" class="button-small">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

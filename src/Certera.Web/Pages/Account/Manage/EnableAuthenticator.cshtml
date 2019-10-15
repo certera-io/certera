@@ -1,0 +1,44 @@
+﻿@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Configure authenticator app";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+
+<h2 class="content-title">
+    <i class="icon-keyboard page-icon"></i> 2-Factor Authentication
+</h2>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <p>Scan the QR Code or enter this key <b><kbd>@Model.SharedKey</kbd></b> into your two factor authenticator app. Spaces and casing do not matter.</p>
+        <div id="qrCode"></div>
+        <div id="qrCodeData" data-url="@Html.Raw(@Model.AuthenticatorUri)"></div>
+        <p>
+            Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
+            with a unique code. Enter the code in the confirmation box below.
+        </p>
+        <form id="send-code" method="post">
+            <div>
+                <label asp-for="Input.Code">Verification Code</label>
+                <input asp-for="Input.Code" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Input.Code" class="text-danger"></span>
+            </div>
+            <button type="submit">Verify</button>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/qrcode.min.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"),
+            {
+                text: "@Html.Raw(Model.AuthenticatorUri)",
+                width: 150,
+                height: 150
+            });
+    </script>
+}

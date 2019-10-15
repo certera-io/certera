@@ -1,0 +1,54 @@
+﻿@page
+@model Certera.Web.Pages.Acme.Accounts.IndexModel
+
+@{
+    ViewData["Title"] = "ACME Acct.";
+    ViewData["ActivePage"] = ManageNavPages.Acme;
+}
+
+<div class="content-title">
+    <i class="icon-lock page-icon"></i> ACME Accounts
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="Create">Create</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        ACME Email
+                    </th>
+                    <th>
+                        ToS
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AcmeAccount[0].Key)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AcmeAccount)
+                {
+                    <tr>
+                        <td data-title="ACME Email">
+                            <div>
+                                <a asp-page="./Edit" asp-route-id="@item.AcmeAccountId">@item.AcmeContactEmail</a>
+                            </div>
+                            @if (item.IsAcmeStaging)
+                            {
+                                <span class="badge badge-info">staging</span>
+                            }
+                        </td>
+                        <td data-title="ToS">
+                            <span class="badge badge-primary">accepted</span>
+                        </td>
+                        <td data-title="@Html.DisplayNameFor(model => model.AcmeAccount[0].Key)">
+                            <a asp-page="/Keys/Edit" asp-route-id="@item.KeyId">@item.Key.Name</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

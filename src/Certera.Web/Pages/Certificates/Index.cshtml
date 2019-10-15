@@ -1,0 +1,69 @@
+﻿@page
+@model Certera.Web.Pages.Certificates.IndexModel
+
+@{
+    ViewData["Title"] = "Certificates";
+    ViewData["ActivePage"] = ManageNavPages.Certificates;
+}
+
+<div class="content-title">
+    <i class="icon-certificate page-icon"></i> Certificates
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="Create">Create</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate[0].Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate[0].Subject)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate[0].DateCreated)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate[0].Key)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AcmeCertificate)
+                {
+                    <tr>
+                        <td data-title="@Html.DisplayNameFor(model => model.AcmeCertificate[0].Name)">
+                            <div>
+                                <a asp-page="./History" asp-route-id="@item.AcmeCertificateId">@Html.DisplayFor(modelItem => item.Name)</a>
+                            </div>
+                            <div>
+                                @if (item.AcmeAccount.IsAcmeStaging)
+                                {
+                                    <span class="badge badge-success">staging</span>
+                                }
+                                <span class="badge badge-dark">@Html.DisplayFor(modelItem => item.ChallengeType)</span>
+                            </div>
+                        </td>
+                        <td data-title="@Html.DisplayNameFor(model => model.AcmeCertificate[0].Subject)">
+                            <div>
+                                @Html.DisplayFor(modelItem => item.Subject)
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.SANs))
+                            {
+                                <span class="badge badge-info">@Html.DisplayFor(modelItem => item.SANs)</span>
+                            }
+                        </td>
+                        <td data-title="@Html.DisplayNameFor(model => model.AcmeCertificate[0].DateCreated)">
+                            @item.DateCreated.ToLocalTime().ToString()
+                        </td>
+                        <td>
+                            <a asp-page="/Keys/Edit" asp-route-id="@item.KeyId">@item.Key.Name</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

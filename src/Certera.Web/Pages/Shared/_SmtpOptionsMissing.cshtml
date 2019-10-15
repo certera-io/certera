@@ -1,0 +1,11 @@
+﻿@using Microsoft.Extensions.Options
+@using Certera.Core.Mail
+@inject IOptionsSnapshot<MailSenderInfo> MailSenderInfo
+
+@if (string.IsNullOrWhiteSpace(MailSenderInfo.Value.Host))
+{
+    <div class="row space-bottom alert">
+        <span class="btn-close" onclick="this.parentElement.style.display='none';">&times;</span>
+        Configure SMTP settings in the config.json file
+    </div>
+}

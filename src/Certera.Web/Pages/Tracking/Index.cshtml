@@ -1,0 +1,174 @@
+﻿@page
+@model Certera.Web.Pages.Tracking.IndexModel
+@using Certera.Data.Views
+@{
+    ViewData["Title"] = "Tracking";
+ ViewData["ActivePage"] = ManageNavPages.Tracking;
+}
+
+<div class="content-title">
+    <i class="icon-earth page-icon"></i> Tracking
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="/Tracking/Edit">Edit</a>
+        @if (Model.TrackedCertificates.Any(x => x.Source == Data.Models.CertificateSource.TrackedDomain))
+        {
+            <a class="button button-small" href="/tracking/scan/">Scan All</a>
+        }
+        @if (!Model.TrackedCertificates.IsNullOrEmpty())
+        {
+
+            <form method="get">
+                <select asp-items="@Model.Sort" name="sort" class="sort"></select>
+                <button class="button button-small" type="submit">Go</button>
+            </form>
+        }
+    </div>
+    <div class="row space-bottom">
+        @if (Model.TrackedCertificates.IsNullOrEmpty())
+        {
+            <p>Click edit above to add domains or certificates to track.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Issuer</th>
+                        <th>Scanned</th>
+                        <th>Expiration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cert in Model.TrackedCertificates)
+                    {
+                        <tr>
+                            <td data-title="Subject">
+                                @if (cert.Source == Data.Models.CertificateSource.Uploaded)
+                                {
+                                    <a href="/tracking/delete/@cert.Id"><span>@cert.Subject </span><i class="icon-bin"></i></a>
+                                }
+                                else if (cert.Source == Data.Models.CertificateSource.TrackedDomain)
+                                {
+                                    <a asp-page="./History" asp-route-id="@cert.Id">@cert.Subject</a>
+                                }
+                                else
+                                {
+                                    <a href="/certificates/history/@cert.Id">@cert.Subject</a>
+                                }
+                                
+                                @if (cert.Source == Data.Models.CertificateSource.Uploaded)
+                                {
+                                    <i class="icon-folder-upload" title="uploaded certificate"></i>
+                                }
+                            </td>
+                            <td data-title="Issuer">
+                                @if (!string.IsNullOrWhiteSpace(cert.Issuer))
+                                {
+                                    <span class="badge badge-secondary">@cert.Issuer</span>
+                                }
+                                @Html.Raw(AcmeCertBadge(cert))
+                            </td>
+                            <td data-title="Scanned">
+                                @if (cert.Source == Data.Models.CertificateSource.TrackedDomain)
+                                {
+                                    @Html.Raw(FriendlyModifiedDate(cert))
+                                }
+                                @Html.Raw(ValidText(cert.IsValid))
+                            </td>
+                            <td data-title="Expiration">
+                                @cert.ValidTo?.ToShortDateString()
+                                @if (cert.DaysRemaining != null)
+                                {
+                                <span class="@GetDaysRemainingBadge(cert.DaysRemaining)">
+                                    @GetDaysRemainingText(cert.DaysRemaining)
+                                </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetDaysRemainingBadge(int? daysRemaining)
+    {
+        if (daysRemaining == null)
+        {
+            return string.Empty;
+        }
+        else if (daysRemaining < 7)
+        {
+            return "badge badge-danger";
+        }
+        else if (daysRemaining < 21)
+        {
+            return "badge badge-warning";
+        }
+        else
+        {
+            return "badge badge-info";
+        }
+    }
+    string GetDaysRemainingText(int? daysRemaining)
+    {
+        if (daysRemaining == null)
+        {
+            return string.Empty;
+        }
+        else if (daysRemaining == 1)
+        {
+            return $"{daysRemaining} day";
+        }
+        else
+        {
+            return $"{daysRemaining} days";
+        }
+    }
+
+    string ValidText(bool? isValid)
+    {
+        if (isValid == null)
+        {
+            return string.Empty;
+        }
+
+        if (isValid == true)
+        {
+            return @"<span class=""badge badge-success"">valid</span>";
+        }
+        else
+        {
+            return @"<span class=""badge badge-danger"">invalid</span>";
+        }
+    }
+
+    string FriendlyModifiedDate(TrackedCertificate cert)
+    {
+        if (cert.Source == Data.Models.CertificateSource.TrackedDomain)
+        {
+            return cert.DateModified == null
+                ? "pending"
+                : cert.DateModified.Value.ToFriendlyString();
+        }
+        return cert.DateModified?.ToFriendlyString();
+    }
+    string AcmeCertBadge(TrackedCertificate cert)
+    {
+        if (cert.AcmeCertType == AcmeCertType.None)
+        {
+            return string.Empty;
+        }
+        if (cert.AcmeCertType == AcmeCertType.Staging)
+        {
+            return "<span class=\"badge badge-primary\">acme-staging</span>";
+        }
+        return "<span class=\"badge badge-dark\">acme</span>";
+    }
+}

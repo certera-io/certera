@@ -1,0 +1,53 @@
+﻿@page "{id}"
+@model Certera.Web.Pages.Certificates.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+    ViewData["ActivePage"] = ManageNavPages.Certificates;
+}
+
+<div class="content-title">
+    <i class="icon-certificate page-icon"></i> Certificates - Delete
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="./Edit" asp-route-id="@Model.AcmeCertificate.AcmeCertificateId">Edit</a>
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.AcmeCertificate.Name)
+            </dt>
+            <dd>
+                <div>@Html.DisplayFor(model => model.AcmeCertificate.Name)</div>
+                @if (Model.AcmeCertificate.AcmeAccount.IsAcmeStaging)
+                {
+                    <span class="badge badge-success">staging</span>
+                }
+                <span class="badge badge-dark">@Html.DisplayFor(model => model.AcmeCertificate.ChallengeType)</span>
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.AcmeCertificate.Subject)
+            </dt>
+            <dd>
+                <div>
+                    @Html.DisplayFor(model => model.AcmeCertificate.Subject)
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.AcmeCertificate.SANs))
+                {
+                    <span class="badge badge-info">@Html.DisplayFor(modelItem => Model.AcmeCertificate.SANs)</span>
+                }
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.AcmeCertificate.DateCreated)
+            </dt>
+            <dd>
+                @Model.AcmeCertificate.DateCreated.ToLocalTime().ToString()
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="AcmeCertificate.AcmeCertificateId" />
+            <button type="submit" class="button-small">Delete</button>
+        </form>
+    </div>
+</div>

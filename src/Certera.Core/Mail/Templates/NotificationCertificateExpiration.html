@@ -1,0 +1,21 @@
+﻿<!doctype html>
+<html>
+<head>
+<style>
+    body {
+        font-family:monospace;
+    }
+</style>
+</head>
+<body>
+    <p>
+        <b>{{Domain}}</b> certificate is set to expire at {{DateTime}} ({{DaysText}}).<br />
+    </p>
+    <pre>
+Current details:
+    Thumbprint:        <b>{{Thumbprint}}</b>
+    Public Key (hash): <b>{{PublicKey}}</b>
+    Valid:             <b>{{ValidFrom}} to {{ValidTo}}</b>
+    </pre>
+</body>
+</html>

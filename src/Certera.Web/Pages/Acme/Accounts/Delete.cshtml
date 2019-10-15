@@ -1,0 +1,37 @@
+﻿@page
+@model Certera.Web.Pages.Acme.Accounts.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+    ViewData["ActivePage"] = ManageNavPages.Acme;
+}
+
+<div class="content-title">
+    <i class="icon-key page-icon"></i> ACME Accounts - Delete
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="./Edit" asp-route-id="@Model.AcmeAccount.AcmeAccountId">Edit</a>
+        <h4>Are you sure you want to delete this?</h4>
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.AcmeAccount.AcmeContactEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.AcmeAccount.AcmeContactEmail)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.AcmeAccount.Key)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.AcmeAccount.Key.Name)
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="AcmeAccount.AcmeAccountId" />
+            <button type="submit" class="button-small">Delete</button>
+        </form>
+    </div>
+</div>

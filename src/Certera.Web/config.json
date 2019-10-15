@@ -1,0 +1,15 @@
+{
+  "AllowedRemoteIPAddresses": {
+    "AdminUI": "",
+    "API": ""
+  },
+  "SMTP": {
+    "Host": "",
+    "Port": 25,
+    "Username": "",
+    "Password": "",
+    "UseSSL": true,
+    "FromName": "MySite Certs",
+    "FromEmail": "noreply@mysite.com"
+  }
+}

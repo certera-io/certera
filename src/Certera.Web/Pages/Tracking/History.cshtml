@@ -1,0 +1,91 @@
+﻿@page "{id}"
+@model Certera.Web.Pages.Tracking.HistoryModel
+@using Certera.Data.Models
+
+@{
+    ViewData["Title"] = "History";
+    ViewData["ActivePage"] = ManageNavPages.Tracking;
+}
+
+<div class="content-title">
+    <i class="icon-earth page-icon"></i> Tracking - History
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="/Tracking/Index">List</a>
+        <a class="button button-small" href="/tracking/scan/@Model.Domain.DomainId?returnUrl=@Url.Page("./History")">Scan Now</a>
+    </div>
+    <div class="row space-bottom">
+        @if (Model.Domain.DomainScans.IsNullOrEmpty())
+        {
+            <p>
+                No scans
+            </p>
+        }
+        else
+        {
+            @if (Model.Domain.DateLastScanned != null)
+            {
+            <h3><a href="https://@Model.Domain.HostAndPort()">@Model.Domain.HostAndPort()</a></h3>
+            <h4>Last Scanned: @Model.Domain.DateLastScanned?.ToLocalTime().ToString()</h4>
+            }
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Obtained</th>
+                        <th>Issuer</th>
+                        <th>Thumbprint</th>
+                        <th>Valid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var scan in Model.Domain.DomainScans.OrderByDescending(x => x.DateScan))
+                    {
+                        <tr>
+                            <td data-title="Obtained">
+                                <div>
+                                    @scan.DateScan.ToLocalTime().ToString()
+                                </div>
+                                @Html.Raw(SuccessFailureHtml(scan))
+                            </td>
+                            <td data-title="Issuer">
+                                <span class="badge badge-secondary">
+                                    @scan.DomainCertificate?.IssuerName
+                                </span>
+                            </td>
+                            <td data-title="Thumbprint">
+                                <span class="badge badge-dark">
+                                    @scan.DomainCertificate?.Thumbprint
+                                </span>
+                            </td>
+                            <td data-title="Valid">
+                                @if (scan.DomainCertificate != null)
+                                {
+                                    @scan.DomainCertificate.ValidNotBefore.ToUniversalTime().ToString("yyyy-MM-dd")
+                                    @:to 
+                                    @scan.DomainCertificate.ValidNotAfter.ToUniversalTime().ToString("yyyy-MM-dd")
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@functions {
+    string SuccessFailureHtml(DomainScan scan)
+    {
+        if (scan.ScanSuccess)
+        {
+            return @"<span class=""badge badge-success"">success</span>";
+        }
+        else
+        {
+            return @$"<span class=""badge badge-danger"">failure - {scan.ScanStatus}</span>";
+        }
+    }
+}

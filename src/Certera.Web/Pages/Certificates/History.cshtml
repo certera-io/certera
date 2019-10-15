@@ -1,0 +1,93 @@
+﻿@page "{id}"
+@model Certera.Web.Pages.Certificates.HistoryModel
+@using Certera.Data.Models
+
+@{
+    ViewData["Title"] = "History";
+    ViewData["ActivePage"] = ManageNavPages.Certificates;
+}
+
+<div class="content-title">
+    <i class="icon-certificate page-icon"></i> Certificates - History
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="./Edit" asp-route-id="@Model.AcmeCertificate.AcmeCertificateId">Edit</a>
+        <a class="button button-small" href="/certificates/request/@Model.AcmeCertificate.AcmeCertificateId?returnUrl=@Url.Page("./History")">Request Now</a>
+    </div>
+    <div class="row space-bottom">
+        @if (Model.AcmeCertificate.AcmeOrders.IsNullOrEmpty())
+        {
+            <p>
+                No certificate orders
+            </p>
+        }
+        else
+        {
+            <h3>@Model.AcmeCertificate.Name</h3>
+            <h4>Subject: @Model.AcmeCertificate.Subject</h4>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Created</th>
+                        <th>Thumbprint</th>
+                        <th>Valid</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.AcmeCertificate.AcmeOrders.OrderByDescending(x => x.DateCreated))
+                    {
+                        <tr>
+                            <td data-title="Created">
+                                <div>
+                                    @order.DateCreated.ToLocalTime().ToString()
+                                </div>
+                            </td>
+                            <td data-title="Thumbprint">
+                                <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
+                            </td>
+                            <td data-title="Valid">
+                                @if (order.DomainCertificate != null)
+                                {
+                                    @order.DomainCertificate.ValidNotBefore.ToUniversalTime().ToString("yyyy-MM-dd")
+                                    @:to
+                                    @order.DomainCertificate.ValidNotAfter.ToUniversalTime().ToString("yyyy-MM-dd")
+                                }
+                            </td>
+                            <td data-title="Status">
+                                @Html.Raw(StatusBadge(order)) 
+                                @order.Errors?.Replace("\r\n", "<br />")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@functions {
+    string StatusBadge(AcmeOrder order)
+    {
+        switch (order.Status)
+        {
+            case AcmeOrderStatus.Created:
+                return @"<span class=""badge badge-primary"">created</span>";
+            case AcmeOrderStatus.Challenging:
+                return @"<span class=""badge badge-secondary"">challenging</span>";
+            case AcmeOrderStatus.Validating:
+                return @"<span class=""badge badge-info"">validating</span>";
+            case AcmeOrderStatus.Invalid:
+                return @"<span class=""badge badge-warning"">invalid</span>";
+            case AcmeOrderStatus.Error:
+                return @"<span class=""badge badge-danger"">error</span>";
+            case AcmeOrderStatus.Completed:
+                return @"<span class=""badge badge-success"">completed</span>";
+            default:
+                return string.Empty;
+        }        
+    }
+}

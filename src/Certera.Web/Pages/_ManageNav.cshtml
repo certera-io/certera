@@ -1,0 +1,12 @@
+﻿<aside class="aside column column-fixed-sm">
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a class="@ManageNavPages.TrackingNavClass(ViewContext)" asp-page="/Tracking/Index"><i class="menu-icon icon-earth"></i><span> Tracking</span></a></li>
+            <li><a class="@ManageNavPages.AcmeNavClass(ViewContext)" asp-page="/Acme/Accounts/Index"><i class="menu-icon icon-lock"></i><span> ACME Accounts</span></a></li>
+            <li><a class="@ManageNavPages.KeysNavClass(ViewContext)" asp-page="/Keys/Index"><i class="menu-icon icon-key"></i><span> Keys</span></a></li>
+            <li><a class="@ManageNavPages.CertificatesNavClass(ViewContext)" asp-page="/Certificates/Index"><i class="menu-icon icon-certificate"></i><span> Certificates</span></a></li>
+            <li><a class="@ManageNavPages.NotificationsNavClass(ViewContext)" asp-page="/Notifications/Index"><i class="menu-icon icon-alarm"></i><span> Notifications</span></a></li>
+            <li><a class="@ManageNavPages.SettingsNavClass(ViewContext)" asp-page="/Settings/Index"><i class="menu-icon icon-cog"></i><span> Settings</span></a></li>
+        </ul>
+    </nav>
+</aside>

@@ -1,0 +1,42 @@
+﻿@page "{id}"
+@model Certera.Web.Pages.Tracking.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+    ViewData["ActivePage"] = ManageNavPages.Tracking;
+}
+
+<div class="content-title">
+    <i class="icon-earth page-icon"></i> Certificate - Delete
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">List</a>
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.DomainCertificate.Subject)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DomainCertificate.Subject)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DomainCertificate.IssuerName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DomainCertificate.IssuerName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DomainCertificate.DateCreated)
+            </dt>
+            <dd>
+                @Model.DomainCertificate.DateCreated.ToLocalTime().ToString()
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="DomainCertificate.DomainCertificateId" />
+            <button type="submit" class="button-small">Delete</button>
+        </form>
+    </div>
+</div>

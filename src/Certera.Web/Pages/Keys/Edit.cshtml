@@ -1,0 +1,42 @@
+﻿@page "{id}"
+@model Certera.Web.Pages.Keys.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    ViewData["ActivePage"] = ManageNavPages.Keys;
+}
+
+<div class="content-title">
+    <i class="icon-key page-icon"></i> Keys - Edit
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">Keys</a>
+        <a class="button button-small" asp-page="./Delete" asp-route-id="@Model.Key.KeyId">Delete</a>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Key.KeyId" />
+            <div>
+                <label asp-for="Key.Name"></label>
+                <input asp-for="Key.Name" />
+                <span asp-validation-for="Key.Name" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Key.Description"></label>
+                <input asp-for="Key.Description" />
+                <span asp-validation-for="Key.Description" class="text-danger"></span>
+            </div>
+            <div>
+                <span class="badge badge-info">@Model.Key.Algorithm)</span>
+            </div>
+            @*<div>
+                <label asp-for="Key.DateRotationReminder"></label>
+                <input type="date" asp-for="Key.DateRotationReminder" />
+                <span asp-validation-for="Key.DateRotationReminder" class="text-danger"></span>
+            </div>*@
+            <div>
+                <button type="submit" class="button-small">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

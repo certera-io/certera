@@ -1,0 +1,22 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+
+<ul class="menu float-right">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="menu-item">
+        <a class="menu-link" href="/account/manage" title="Manage">@User.Identity.Name</a>
+    </li>
+    <li class="menu-item">
+        <form asp-page="/Account/Logout" method="post" >
+            <button type="submit" class="button-small button-header">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="menu-item">
+        <a class="menu-link" href="/account/login">Login</a>
+    </li>
+}
+</ul>

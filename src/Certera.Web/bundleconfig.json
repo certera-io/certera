@@ -1,0 +1,14 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/normalize.css",
+      "wwwroot/css/milligram.css",
+      "wwwroot/css/icons.css",
+      "wwwroot/css/main.css"
+    ],
+    "minify": {
+      "enabled": true
+    }
+  }
+]

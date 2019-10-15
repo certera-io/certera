@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Mail\Templates\NotificationCertificateAcquisitionFailure.html" />
+    <None Remove="Mail\Templates\NotificationCertificateChange.html" />
+    <None Remove="Mail\Templates\NotificationCertificateExpiration.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Mail\Templates\NotificationCertificateAcquisitionFailure.html" />
+    <EmbeddedResource Include="Mail\Templates\NotificationCertificateChange.html" />
+    <EmbeddedResource Include="Mail\Templates\NotificationCertificateExpiration.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.3.2" />
+    <PackageReference Include="Nager.PublicSuffix" Version="1.5.0" />
+  </ItemGroup>
+
+</Project>

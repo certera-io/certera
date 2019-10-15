@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+@section Head {
+    @RenderSection("Head", false)
+}
+
+<section class="container-acct">
+    <div class="row">
+        <div class="column column-80 column-offset-10">
+            @RenderBody()
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

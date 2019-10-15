@@ -1,0 +1,43 @@
+﻿@page
+@model Certera.Web.Pages.Acme.Accounts.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    ViewData["ActivePage"] = ManageNavPages.Acme;
+}
+
+<div class="content-title">
+    <i class="icon-key page-icon"></i> ACME Accounts - Edit
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">ACME Accounts</a>
+        <a class="button button-small" asp-page="./Delete" asp-route-id="@Model.AcmeAccount.AcmeAccountId">Delete</a>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AcmeAccount.AcmeAccountId" />
+            <div>
+                <label asp-for="AcmeAccount.AcmeContactEmail"></label>
+                <input asp-for="AcmeAccount.AcmeContactEmail" disabled="disabled" />
+                <span asp-validation-for="AcmeAccount.AcmeContactEmail" class="text-danger"></span>
+            </div>
+            <div>
+                <label>
+                    <input asp-for="AcmeAccount.AcmeAcceptTos" disabled="disabled" /> @Html.DisplayNameFor(model => model.AcmeAccount.AcmeAcceptTos)
+                </label>
+            </div>
+            <div>
+                <label asp-for="AcmeAccount.KeyId"></label>
+                @await Component.InvokeAsync("KeySelect", new { name = "AcmeAccount.KeyId", selected = @Model.AcmeAccount.KeyId, hideGenNewKeyOption = true })
+                <span asp-validation-for="AcmeAccount.KeyId" class="text-danger"></span>
+            </div>
+            <div>
+                <button type="submit" class="button-small">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>

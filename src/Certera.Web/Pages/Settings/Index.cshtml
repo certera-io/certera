@@ -1,0 +1,64 @@
+﻿@page
+@model Certera.Web.Pages.Settings.IndexModel
+
+@using Microsoft.Extensions.Options
+@using Certera.Core.Mail
+@inject IOptionsSnapshot<MailSenderInfo> MailSenderInfo
+
+@{
+    ViewData["Title"] = "Settings";
+    ViewData["ActivePage"] = ManageNavPages.Settings;
+}
+
+<div class="content-title">
+    <i class="icon-cog page-icon"></i> Settings
+</div>
+<div class="content-wrapper">
+    <partial name="_SmtpOptionsMissing" />
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <h3>API</h3>
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.ApplicationUser.ApiKey1)
+            </dt>
+            <dd>
+                <div>
+                    @Html.DisplayFor(model => model.ApplicationUser.ApiKey1)
+                </div>
+                <form method="post">
+                    <input type="hidden" name="key" value="apikey1" />
+                    <button type="submit" class="button-small">Change</button>
+                </form>
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ApplicationUser.ApiKey2)
+            </dt>
+            <dd>
+                <div>
+                    @Html.DisplayFor(model => model.ApplicationUser.ApiKey2)
+                </div>
+                <form method="post">
+                    <input type="hidden" name="key" value="apikey2" />
+                    <button type="submit" class="button-small">Change</button>
+                </form>
+            </dd>
+        </dl>
+        <hr />
+        <h3>SMTP</h3>
+        <dl>
+            <dt>
+                SMTP Host
+            </dt>
+            <dd>
+                @MailSenderInfo.Value.Host
+            </dd>
+            <dt>
+                SMTP Port
+            </dt>
+            <dd>
+                @MailSenderInfo.Value.Port
+            </dd>
+        </dl>
+    </div>
+</div>

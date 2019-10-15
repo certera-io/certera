@@ -1,0 +1,9 @@
+﻿@model string
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    <div class="row space-bottom alert">
+        <span class="btn-close" onclick="this.parentElement.style.display='none';">&times;</span>
+        @Model
+    </div>
+}

@@ -1,0 +1,40 @@
+﻿@page
+@model Certera.Web.Pages.Setup.CertificateModel
+
+@using Microsoft.Extensions.Options
+@using Certera.Web.Options
+@inject IOptionsSnapshot<HttpServer> HttpServerOptions
+
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Setup";
+}
+
+@section Head {
+    <style>
+        .container {
+            margin-top: 120px;
+        }
+    </style>
+}
+
+<section class="container">
+    <div class="row">
+        <div class="column column-80 column-offset-10">
+            <h3>
+                Setup - Certificate
+            </h3>
+            <hr />
+            <p>
+                We're now ready to get a certificate for "@HttpServerOptions.Value.SiteHostname". Please make sure
+                port 80 is open to the internet if you haven't already done that.
+                <br />
+                <br />
+                Alright, let's go! This can take a moment, but we'll keep you updated all of the way through.
+            </p>
+            <form method="post" action="/setup/get-acme-cert">
+                <button type="submit">Get Certificate</button>
+            </form>
+        </div>
+    </div>
+</section>

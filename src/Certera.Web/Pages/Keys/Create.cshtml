@@ -1,0 +1,67 @@
+﻿@page
+@model Certera.Web.Pages.Keys.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    ViewData["ActivePage"] = ManageNavPages.Keys;
+}
+
+<div class="content-title">
+    <i class="icon-key page-icon"></i> Keys - Create
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">List</a>
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <label asp-for="Key.Name"></label>
+                <input asp-for="Key.Name" />
+                <span asp-validation-for="Key.Name" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Key.Description"></label>
+                <input asp-for="Key.Description" />
+                <span asp-validation-for="Key.Description" class="text-danger"></span>
+            </div>
+            @*<div>
+                <label asp-for="Key.DateRotationReminder"></label>
+                <div>
+                    <small class="text-muted">(A reminder to rotate this key)</small>
+                </div>
+                <input type="date" asp-for="Key.DateRotationReminder" />
+                <span asp-validation-for="Key.DateRotationReminder" class="text-danger"></span>
+            </div>*@
+            <h3>Choose one of the following</h3>
+            <h4>1. Generate a key</h4>
+            <div>
+                <label>Key Algorithm</label>
+                <select name="keyAlgorithm">
+                    <option value="-1">Select</option>
+                    <option value="0">RSA-PKCS1-v1_5 (SHA-256)</option>
+                    <option value="1">ECDSA P-256 (SHA-256)</option>
+                    <option value="2">ECDSA P-384 (SHA-384)</option>
+                    <option value="3">ECDSA P-521 (SHA-512)</option>
+                </select>
+            </div>
+
+            <h4>2. Enter key contents (PEM)</h4>
+            <p>Enter a key file in PEM format or upload a file.</p>
+            <div>
+                <label asp-for="Key.RawData"></label>
+                <textarea asp-for="Key.RawData" class="form-control"></textarea>
+                <span asp-validation-for="Key.RawData" class="text-danger"></span>
+            </div>
+
+            <h4>3. Upload a PEM or DER encoded key</h4>
+            <div>
+                <label>Key File</label>
+                <input class="form-control" type="file" name="KeyFile" />
+                <span asp-validation-for="Key.RawData" class="text-danger"></span>
+            </div>
+            <div>
+                <button type="submit" class="button-small">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+﻿@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+@section Head {
+    @RenderSection("Head", false)
+}
+<div class="row clearfix">
+    <partial name="_ManageNav" />
+    <article class="column column-fixed-lg content">
+        @RenderBody()
+    </article>
+</div>
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

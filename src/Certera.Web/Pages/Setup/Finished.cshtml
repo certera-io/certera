@@ -1,0 +1,36 @@
+﻿@page
+@model Certera.Web.Pages.Setup.FinishedModel
+
+@using Certera.Web.Options
+@using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<HttpServer> HttpServerOptions
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Setup";
+}
+@section Head {
+    <style>
+        .container {
+            margin-top: 120px;
+        }
+    </style>
+}
+
+<section class="container">
+    <div class="row">
+        <div class="column column-80 column-offset-10">
+            <h3>
+                Setup - Finished
+            </h3>
+            <hr />
+            <p>
+                Congratulations, setup is done!
+                <br />
+                <br />
+                Make sure port @HttpServerOptions.Value.HttpsPort is accessible from the internet and Certera is ready to go.
+                Next, <a asp-page="/Account/Login">login</a> to get started.
+            </p>
+
+        </div>
+    </div>
+</section>

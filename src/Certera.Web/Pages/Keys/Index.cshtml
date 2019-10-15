@@ -1,0 +1,49 @@
+﻿@page
+@model Certera.Web.Pages.Keys.IndexModel
+
+@{
+    ViewData["Title"] = "Keys";
+    ViewData["ActivePage"] = ManageNavPages.Keys;
+}
+
+<div class="content-title">
+    <i class="icon-key page-icon"></i> Keys
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="Create">Create</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Key[0].Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Key[0].Description)</th>
+                    <th>@Html.DisplayNameFor(model => model.Key[0].DateCreated)</th>
+                    @*<th>@Html.DisplayNameFor(model => model.Key[0].DateRotationReminder)</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Key)
+                {
+                    <tr>
+                        <td data-title="@Html.DisplayNameFor(model => model.Key[0].Name)">
+                            <div>
+                                <a asp-page="./Edit" asp-route-id="@item.KeyId">@item.Name</a>
+                            </div>
+                            <span class="badge badge-info">@Html.DisplayFor(modelItem => item.Algorithm)</span>
+                        </td>
+                        <td data-title="@Html.DisplayNameFor(model => model.Key[0].Description)">
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td data-title="@Html.DisplayNameFor(model => model.Key[0].DateCreated)">
+                            @item.DateCreated.ToLocalTime().ToString()
+                        </td>
+                        @*<td data-title="@Html.DisplayNameFor(model => model.Key[0].DateRotationReminder)">
+                                @Html.DisplayFor(modelItem => item.DateRotationReminder)
+                            </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+﻿@page
+@model Certera.Web.Pages.Tracking.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    ViewData["ActivePage"] = ManageNavPages.Tracking;
+}
+
+<div class="content-title">
+    <i class="icon-earth page-icon"></i> Tracking - Edit
+</div>
+<div class="content-wrapper">
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <a class="button button-small" asp-page="/Tracking/Index">Back</a>
+    </div>
+    <div class="row">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <label>Domains</label>
+                <div>
+                    <small class="text-muted">Enter domains like [https://]example.com[:port] (port 443 is used by default if no port specified)</small>
+                </div>
+                <textarea asp-for="Input.Domains" class="form-control"></textarea>
+                <span asp-validation-for="Input.Domains" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Certificate</label>
+                <div>
+                    <small class="text-muted">Upload a certificate to track its expiration</small>
+                </div>
+                <input type="file" name="CertificateFile" multiple />
+
+                <span asp-validation-for="Input.CertificateFile" class="text-danger"></span>
+            </div>
+            <button type="submit" class="button-small">Submit</button>
+        </form>
+    </div>
+</div>

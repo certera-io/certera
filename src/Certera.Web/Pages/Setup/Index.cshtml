@@ -1,0 +1,54 @@
+﻿@page
+@model Certera.Web.Pages.Setup.IndexModel
+
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Setup";
+}
+
+@section Head {
+    <style>
+        label {
+            display: inline-block;
+        }
+        .container {
+            margin-top: 120px;
+        }
+    </style>
+}
+
+<section class="container">
+    <div class="row">
+        <div class="column column-80 column-offset-10">
+            <h3>
+                Setup - Account
+            </h3>
+            <h5 class="text-muted">Just a few things before we start...</h5>
+            <hr />
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div>
+                    <label asp-for="Setup.Email"></label>
+                    <span class="required"> *</span>
+                    <input asp-for="Setup.Email" />
+                    <span asp-validation-for="Setup.Email" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Setup.Password"></label>
+                    <label class="required"> *</label>
+                    <input asp-for="Setup.Password" />
+                    <span asp-validation-for="Setup.Password" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Setup.ConfirmPassword"></label>
+                    <label class="required"> *</label>
+                    <input asp-for="Setup.ConfirmPassword" />
+                    <span asp-validation-for="Setup.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div>
+                    <input type="submit" value="Submit" />
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

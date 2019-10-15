@@ -1,0 +1,46 @@
+﻿@page
+@model Certera.Web.Pages.Acme.Accounts.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    ViewData["ActivePage"] = ManageNavPages.Acme;
+}
+
+<div class="content-title">
+    <i class="icon-lock page-icon"></i> ACME Accounts - Create
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <a class="button button-small" asp-page="./Index">List</a>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <label asp-for="AcmeAccount.AcmeContactEmail"></label>
+                <input asp-for="AcmeAccount.AcmeContactEmail" />
+                <span asp-validation-for="AcmeAccount.AcmeContactEmail" class="text-danger"></span>
+            </div>
+            <div>
+                <label>
+                    <input asp-for="AcmeAccount.AcmeAcceptTos" />
+                    Accept Let's Encrypt's <a href="@Model.TermsOfService">Terms of Service</a>
+                </label>
+                <span asp-validation-for="AcmeAccount.AcmeAcceptTos" class="text-danger"></span>
+            </div>
+            <div>
+                <label>
+                    <input asp-for="AcmeAccount.IsAcmeStaging" />
+                    Use Let's Encrypt Staging Server
+                </label>
+            </div>
+            <div>
+                <label>
+                  Key  
+                </label>
+                @await Component.InvokeAsync("KeySelect", new { name = "AcmeAccount.KeyId" })
+            </div>
+            <div>
+                <button type="submit" class="button-small">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

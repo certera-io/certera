@@ -1,0 +1,51 @@
+﻿@page
+@model Certera.Web.Pages.Notifications.IndexModel
+
+@{
+    ViewData["Title"] = "Notifications";
+    ViewData["ActivePage"] = ManageNavPages.Notifications;
+}
+
+<div class="content-title">
+    <i class="icon-alarm page-icon"></i> Notifications
+</div>
+<div class="content-wrapper">
+    <partial name="_SmtpOptionsMissing" />
+    <partial name="_StatusMessage" for="StatusMessage" />
+    <div class="row">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NotificationSetting.NotificationSettingId" />
+            <p>Select which kinds of alerts you'd like to receive.</p>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlerts" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlerts)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.ChangeAlerts" /> @Html.DisplayNameFor(model => model.NotificationSetting.ChangeAlerts)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.AcquisitionFailureAlerts" /> @Html.DisplayNameFor(model => model.NotificationSetting.AcquisitionFailureAlerts)
+            </div>
+            <hr />
+            <p>Control how frequently you'd like to receive certificate expiration alerts.</p>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlert1Day" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert1Day)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlert3Days" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert3Days)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlert7Days" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert7Days)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlert14Days" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert14Days)
+            </div>
+            <div>
+                <input asp-for="NotificationSetting.ExpirationAlert30Days" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert30Days)
+            </div>
+            <div>
+                <button type="submit" class="button-small">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
