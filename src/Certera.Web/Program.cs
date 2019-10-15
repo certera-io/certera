@@ -1,7 +1,9 @@
 ﻿using Certera.Data;
+using Certera.Web.Extensions;
 using Certera.Web.Options;
 using Certes;
 using Certes.Acme;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -14,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Net;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -135,11 +139,16 @@ namespace Certera.Web
 
     public static class KestrelServerOptionsExtensions
     {
+        private static X509Certificate2 _localCert;
+        private static X509Certificate2 _tempCert;
         private static X509Certificate2 _lastCert;
         private static long _lastCertId;
 
         public static void ConfigureEndpoints(this KestrelServerOptions options)
         {
+            // Used for accessing certera locally
+            _localCert = GenerateSelfSignedCertificate("localhost");
+
             var configuration = options.ApplicationServices.GetRequiredService<IConfiguration>();
 
             var httpServer = new HttpServer();
@@ -163,18 +172,18 @@ namespace Certera.Web
 
                                 // Try to get the cert and fallback to default localhost cert.
                                 // TODO: check for closure issues on "options" below
-                                return GetHttpsCertificate(options, name);
+                                return GetHttpsCertificate(ctx, options, name);
                             };
                         });
                     });
             }
         }
 
-        private static X509Certificate2 GetHttpsCertificate(KestrelServerOptions options, string name)
+        private static X509Certificate2 GetHttpsCertificate(ConnectionContext connectionContext, KestrelServerOptions options, string name)
         {
-            if (string.Equals(name, "localhost", StringComparison.OrdinalIgnoreCase))
+            if (connectionContext.IsLocal())
             {
-                return new X509Certificate2("localhost.pfx", "password");
+                return _localCert;
             }
 
             using (var scope = options.ApplicationServices.CreateScope())
@@ -216,7 +225,57 @@ namespace Certera.Web
                 logger.LogWarning($"No certificate found for {host}. Falling back to default localhost certificate.");
             }
 
-            return new X509Certificate2("localhost.pfx", "password");
+            // This server could be on a VPS or cloud (i.e. not locally accessible), 
+            // create and serve a temporary, self-signed cert for this hostname.
+            if (_tempCert == null)
+            {
+                _tempCert = GenerateSelfSignedCertificate(name);
+            }
+            return _tempCert;
+        }
+
+        private static X509Certificate2 GenerateSelfSignedCertificate(string name)
+        {
+            var distinguishedName = new X500DistinguishedName($"CN={name}");
+
+            using (var rsa = RSA.Create(2048))
+            {
+                var request = new CertificateRequest(distinguishedName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                request.CertificateExtensions.Add(
+                    new X509KeyUsageExtension(
+                        X509KeyUsageFlags.DataEncipherment | 
+                        X509KeyUsageFlags.KeyEncipherment | 
+                        X509KeyUsageFlags.DigitalSignature, false));
+
+                request.CertificateExtensions.Add(
+                   new X509EnhancedKeyUsageExtension(
+                       new OidCollection
+                       {
+                            new Oid("1.3.6.1.5.5.7.3.1"), // server auth
+                            new Oid("1.3.6.1.5.5.7.3.2")  // client auth
+                       }, false));
+
+                // When creating the localhost certificate, add the other names
+                if (string.Equals(name, "localhost", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sanBuilder = new SubjectAlternativeNameBuilder();
+                    sanBuilder.AddIpAddress(IPAddress.Loopback);
+                    sanBuilder.AddIpAddress(IPAddress.IPv6Loopback);
+                    sanBuilder.AddDnsName("localhost");
+                    sanBuilder.AddDnsName(Environment.MachineName);
+
+                    request.CertificateExtensions.Add(sanBuilder.Build());
+                }
+
+                var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)),
+                    new DateTimeOffset(DateTime.UtcNow.AddDays(90)));
+                certificate.FriendlyName = name;
+
+                var tempPwd = Guid.NewGuid().ToString();
+
+                return new X509Certificate2(certificate.Export(X509ContentType.Pfx, tempPwd), tempPwd, X509KeyStorageFlags.MachineKeySet);
+            }
         }
     }
 }

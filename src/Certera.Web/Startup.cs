@@ -211,10 +211,6 @@ namespace Certera.Web
                     .Add(ctx =>
                     {
                         var req = ctx.HttpContext.Request;
-                        if (req.IsLocal() && !req.Path.StartsWithSegments("/account"))
-                        {
-                            return;
-                        }
 
                         if (!req.IsHttps &&
                             (!req.Path.StartsWithSegments("/.well-known") &&

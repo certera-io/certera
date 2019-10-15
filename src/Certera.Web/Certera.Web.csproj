@@ -5,13 +5,16 @@
     <UserSecretsId>aspnet-Certera.Web-5A368144-3DE0-4512-9F6D-C55B403FAC22</UserSecretsId>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AssemblyName>certera</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>codesigning.pfx</AssemblyOriginatorKeyFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>A central validation server for Let's Encrypt certificates.</Description>
+    <Copyright>https://docs.certera.io/#license</Copyright>
+    <PackageProjectUrl>https://certera.io</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/certera-io/certera</RepositoryUrl>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="localhost.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.0.415" />
