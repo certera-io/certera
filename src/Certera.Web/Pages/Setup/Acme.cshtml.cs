@@ -74,7 +74,7 @@ namespace Certera.Web.Pages.Setup
             return Page();
         }
 
-        public async Task<string> GetTermsOfService(bool staging = false)
+        private async Task<string> GetTermsOfService()
         {
             var ctx = new AcmeContext(WellKnownServers.LetsEncryptV2);
             return (await ctx.TermsOfService()).ToString();
@@ -93,7 +93,6 @@ namespace Certera.Web.Pages.Setup
             var key = await CreateKeyIfNotExists(user, keyContents, false);
             var acmeAccount = await CreateOrUpdateAcmeAccount(user, key, false);
             await EnsureLetsEncryptAccountExists(acmeAccount, false);
-
 
             var stagingKey = await CreateKeyIfNotExists(user, null, true);
             var stagingAcmeAccount = await CreateOrUpdateAcmeAccount(user, stagingKey, true);

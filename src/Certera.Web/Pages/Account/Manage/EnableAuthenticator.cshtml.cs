@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace Certera.Web.Pages.Account.Manage
         public string AuthenticatorUri { get; set; }
 
         [TempData]
-        public string[] RecoveryCodes { get; set; }
+        public IList<string> RecoveryCodes { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -100,7 +101,7 @@ namespace Certera.Web.Pages.Account.Manage
             if (await _userManager.CountRecoveryCodesAsync(user) == 0)
             {
                 var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-                RecoveryCodes = recoveryCodes.ToArray();
+                RecoveryCodes = recoveryCodes.ToList();
                 return RedirectToPage("./ShowRecoveryCodes");
             }
             else

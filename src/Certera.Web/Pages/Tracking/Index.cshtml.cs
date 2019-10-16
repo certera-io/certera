@@ -26,7 +26,7 @@ namespace Certera.Web.Pages.Tracking
         [TempData]
         public string StatusMessage { get; set; }
 
-        public async Task<IActionResult> OnGet(string sort)
+        public IActionResult OnGet(string sort)
         {
             if (!string.IsNullOrWhiteSpace(sort))
             {
