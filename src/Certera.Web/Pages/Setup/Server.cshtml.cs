@@ -38,7 +38,7 @@ namespace Certera.Web.Pages.Setup
         {
         }
 
-        public async Task<IActionResult> OnPostAsync(IFormFile accountKeyFile)
+        public async Task<IActionResult> OnPostAsync()
         {
             // Check basic validation first and bail out early before anything gets updated.
             if (!ModelState.IsValid)
