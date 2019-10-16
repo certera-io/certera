@@ -274,3 +274,4 @@ src/Certera.Web/Certera.db
 src/Certera.Web/Certera.db-shm
 src/Certera.Web/Certera.db-wal
 src/Certera.Web/config.Development.json
+build/temp/

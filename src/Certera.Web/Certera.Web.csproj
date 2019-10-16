@@ -5,7 +5,7 @@
     <UserSecretsId>aspnet-Certera.Web-5A368144-3DE0-4512-9F6D-C55B403FAC22</UserSecretsId>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AssemblyName>certera</AssemblyName>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>codesigning.pfx</AssemblyOriginatorKeyFile>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>A central validation server for Let's Encrypt certificates.</Description>
