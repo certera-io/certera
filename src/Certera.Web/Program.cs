@@ -270,7 +270,6 @@ namespace Certera.Web
 
                 var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)),
                     new DateTimeOffset(DateTime.UtcNow.AddDays(90)));
-                certificate.FriendlyName = name;
 
                 var tempPwd = Guid.NewGuid().ToString();
 
