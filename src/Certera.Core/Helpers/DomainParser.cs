@@ -21,12 +21,19 @@ namespace Certera.Core.Helpers
             {
                 return null;
             }
+            
             if (host.Contains("*."))
             {
                 host = host.Replace("*.", "");
             }
-            var domain = _domainParser.Get(host);
-            return domain.RegistrableDomain;
+            
+            if (_domainParser.IsValidDomain(host))
+            {
+                var domain = _domainParser.Get(host);
+                return domain.RegistrableDomain;
+            }
+
+            return null;
         }
     }
 }

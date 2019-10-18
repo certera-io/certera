@@ -2,7 +2,6 @@ using Certera.Core.Mail;
 using Certera.Data;
 using Certera.Web.AcmeProviders;
 using Certera.Web.Authentication;
-using Certera.Web.Extensions;
 using Certera.Web.Middleware;
 using Certera.Web.Options;
 using Certera.Web.Services;
@@ -100,20 +99,21 @@ namespace Certera.Web
             var httpServerOptions = services.BuildServiceProvider().GetService<IOptions<HttpServer>>()?.Value;
 #pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
 
-            var allowedHosts = new List<string>
-            {
-                "localhost"
-            };
-
+            // Only configure the allowed hosts after setup has completed.
+            // If this is being setup on VPS/Cloud, a hostname won't be known until after setup.
             if (!string.IsNullOrWhiteSpace(httpServerOptions?.SiteHostname))
             {
-                allowedHosts.Add(httpServerOptions?.SiteHostname);
-            }
+                var allowedHosts = new List<string>
+                {
+                    "localhost",
+                    httpServerOptions.SiteHostname
+                };
 
-            services.Configure<HostFilteringOptions>(options =>
-            {
-                options.AllowedHosts = allowedHosts;
-            });
+                services.Configure<HostFilteringOptions>(options =>
+                {
+                    options.AllowedHosts = allowedHosts;
+                });
+            }
 
             services.Configure<AntiforgeryOptions>(options =>
             {
@@ -199,47 +199,35 @@ namespace Certera.Web
                 }
             }
 
-            int? httpsPort = httpServerOptions?.Value?.HttpsPort;
-            if (httpsPort != null && httpsPort > 0)
-            {
-                // This does a few things we don't want to do. It will do 5001 for dev, which sometimes we don't want
-                // and it will do it for all requests, including the .well-known. 
-                //app.UseHttpsRedirection();
+            // The built-in UseHttpsRedirection does a few things we don't want to do. 
+            // It will do 5001 for dev, which sometimes we don't want
+            // and it will do it for all requests, including the .well-known. 
+            //app.UseHttpsRedirection();
 
-                //It's best to set up how and when we want to do http --> https redirection
-                var options = new RewriteOptions()
-                    .Add(ctx =>
+            // It's best to set up how and when we want to do http --> https redirection
+            // Always redirect to https except when serving the ACME challenge and the API test endpoint to restart the server
+            var options = new RewriteOptions()
+                .Add(ctx =>
+                {
+                    var req = ctx.HttpContext.Request;
+
+                    if (!req.IsHttps &&
+                        (!req.Path.StartsWithSegments("/.well-known/acme-challenge") &&
+                        (!req.Path.StartsWithSegments("/api/test"))))
                     {
-                        var req = ctx.HttpContext.Request;
+                        var redirectUrl = UriHelper.BuildAbsolute(
+                            "https",
+                            req.Host,
+                            req.PathBase,
+                            req.Path,
+                            req.QueryString);
 
-                        if (!req.IsHttps &&
-                            (!req.Path.StartsWithSegments("/.well-known") &&
-                            (!req.Path.StartsWithSegments("/api/test"))))
-                        {
-                            var host = req.Host;
-                            if (httpsPort.Value != 443)
-                            {
-                                host = new HostString(host.Host, httpsPort.Value);
-                            }
-                            else
-                            {
-                                host = new HostString(host.Host);
-                            }
+                        ctx.HttpContext.Response.Redirect(redirectUrl);
+                        ctx.Result = RuleResult.EndResponse;
+                    }
+                });
 
-                            var redirectUrl = UriHelper.BuildAbsolute(
-                                "https",
-                                host,
-                                req.PathBase,
-                                req.Path,
-                                req.QueryString);
-
-                            ctx.HttpContext.Response.Redirect(redirectUrl);
-                            ctx.Result = RuleResult.EndResponse;
-                        }
-                    });
-
-                app.UseRewriter(options);
-            }
+            app.UseRewriter(options);
 
             app.UseStatusCodePages();
 

@@ -143,7 +143,8 @@ namespace Certera.Web.Services
                     $"from {certificate.GetEffectiveDateString()} " +
                     $"to {certificate.GetExpirationDateString()} | " +
                     $"issued by {certificate.Issuer} | " +
-                    $"policy errors: {sslPolicyErrors.ToString()}";
+                    $"policy errors: {sslPolicyErrors.ToString()} | " +
+                    $"verify result: {_certificate.Verify()}";
 
                 _messages.Add(msg);
                 _logger.LogDebug(msg);

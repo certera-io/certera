@@ -157,30 +157,28 @@ namespace Certera.Web
             // Configure HTTP on port 80 on any IP address
             options.ListenAnyIP(80);
 
-            // Configure HTTPS on port user has chosen
-            if (httpServer.HttpsPort != 0)
-            {
-                options.ListenAnyIP(httpServer.HttpsPort,
-                    listenOptions =>
+            // Configure HTTPS on port 443
+            options.ListenAnyIP(443,
+                listenOptions =>
+                {
+                    listenOptions.UseHttps(httpsOptions =>
                     {
-                        listenOptions.UseHttps(httpsOptions =>
+                        httpsOptions.ServerCertificateSelector = (ctx, name) =>
                         {
-                            httpsOptions.ServerCertificateSelector = (ctx, name) =>
-                            {
-                                // If we're here, it means we've already completed setup
-                                // and there should be a cert.
+                            // If we're here, it means we've already completed setup
+                            // and there should be a cert.
 
-                                // Try to get the cert and fallback to default localhost cert.
-                                // TODO: check for closure issues on "options" below
-                                return GetHttpsCertificate(ctx, options, name);
-                            };
-                        });
+                            // Try to get the cert and fallback to default localhost cert.
+                            // TODO: check for closure issues on "options" below
+                            return GetHttpsCertificate(ctx, options, name);
+                        };
                     });
-            }
+                });
         }
 
         private static X509Certificate2 GetHttpsCertificate(ConnectionContext connectionContext, KestrelServerOptions options, string name)
         {
+            // Bail early if we're connecting locally
             if (connectionContext.IsLocal())
             {
                 return _localCert;
@@ -193,9 +191,23 @@ namespace Certera.Web
                 var httpServerOptions = scope.ServiceProvider.GetService<IOptionsSnapshot<HttpServer>>();
                 var host = httpServerOptions.Value.SiteHostname;
 
+                // If setup hasn't completed yet, serve a cert with the hostname being requested
+                if (string.IsNullOrWhiteSpace(host))
+                {
+                    // This server could be on a VPS or cloud (i.e. not locally accessible), 
+                    // create and serve a temporary, self-signed cert for this hostname.
+                    if (_tempCert == null)
+                    {
+                        _tempCert = GenerateSelfSignedCertificate(name);
+                    }
+                    logger.LogDebug($"Serve self-signed certificate for {name}");
+                    return _tempCert;
+                }
+
+                // A certificate is being requested for some other domain. Ignore it.
                 if (!string.Equals(name, host))
                 {
-                    logger.LogWarning($"Cert requested for {name}, which differs from {host}. Will only attempt to locate certificate for {host}");
+                    logger.LogWarning($"Cert requested for {name}, which differs from {host}. Will only attempt to locate certificate for {host}.");
                     return null;
                 }
 
@@ -222,16 +234,11 @@ namespace Certera.Web
                         return _lastCert;
                     }
                 }
-                logger.LogWarning($"No certificate found for {host}. Falling back to default localhost certificate.");
+
+                logger.LogWarning($"No certificate found for {host}.");
             }
 
-            // This server could be on a VPS or cloud (i.e. not locally accessible), 
-            // create and serve a temporary, self-signed cert for this hostname.
-            if (_tempCert == null)
-            {
-                _tempCert = GenerateSelfSignedCertificate(name);
-            }
-            return _tempCert;
+            return null;
         }
 
         private static X509Certificate2 GenerateSelfSignedCertificate(string name)

@@ -77,7 +77,7 @@
                                 {
                                     @Html.Raw(FriendlyModifiedDate(cert))
                                 }
-                                @Html.Raw(ValidText(cert.IsValid))
+                                @Html.Raw(ValidText(cert))
                             </td>
                             <td data-title="Expiration">
                                 @cert.ValidTo?.ToShortDateString()
@@ -116,6 +116,7 @@
             return "badge badge-info";
         }
     }
+
     string GetDaysRemainingText(int? daysRemaining)
     {
         if (daysRemaining == null)
@@ -132,20 +133,20 @@
         }
     }
 
-    string ValidText(bool? isValid)
+    string ValidText(TrackedCertificate cert)
     {
-        if (isValid == null)
+        if (cert?.IsValid == null)
         {
             return string.Empty;
         }
 
-        if (isValid == true)
+        if (cert.IsValid == true)
         {
             return @"<span class=""badge badge-success"">valid</span>";
         }
         else
         {
-            return @"<span class=""badge badge-danger"">invalid</span>";
+            return @$"<span class=""badge badge-danger"" title=""{cert.VerificationResult}"">invalid</span>";
         }
     }
 
@@ -159,6 +160,7 @@
         }
         return cert.DateModified?.ToFriendlyString();
     }
+
     string AcmeCertBadge(TrackedCertificate cert)
     {
         if (cert.AcmeCertType == AcmeCertType.None)

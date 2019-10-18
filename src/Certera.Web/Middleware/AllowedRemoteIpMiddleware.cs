@@ -32,7 +32,8 @@ namespace Certera.Web.Middleware
             // Also allow access to the acme-challenge endpoint since Let's Encrypt
             // does not publish their IP addresses.
             if (context.Request.IsLocal() ||
-                context.Request.Path.StartsWithSegments("/.well-known/acme-challenge"))
+                context.Request.Path.StartsWithSegments("/.well-known/acme-challenge") ||
+                context.Request.Path.StartsWithSegments("/api/test"))
             {
                 await _next.Invoke(context);
                 return;
@@ -52,6 +53,12 @@ namespace Certera.Web.Middleware
             }
 
             var remoteIp = context.Connection.RemoteIpAddress;
+
+            // IP may come as ::ffff:<ip>, which is an IPv4 mapped to IPv6
+            if (remoteIp?.IsIPv4MappedToIPv6 == true)
+            {
+                remoteIp = remoteIp.MapToIPv4();
+            }
 
             var ips = ipList.Split(',',';', StringSplitOptions.RemoveEmptyEntries);
 

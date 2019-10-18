@@ -27,10 +27,10 @@
         {
             @if (Model.Domain.DateLastScanned != null)
             {
-            <h3><a href="https://@Model.Domain.HostAndPort()">@Model.Domain.HostAndPort()</a></h3>
-            <h4>Last Scanned: @Model.Domain.DateLastScanned?.ToLocalTime().ToString()</h4>
+                <h3><a href="https://@Model.Domain.HostAndPort()">@Model.Domain.HostAndPort()</a></h3>
+                <h4>Last Scanned: @Model.Domain.DateLastScanned?.ToLocalTime().ToString()</h4>
             }
-            
+
             <table>
                 <thead>
                     <tr>
@@ -51,20 +51,16 @@
                                 @Html.Raw(SuccessFailureHtml(scan))
                             </td>
                             <td data-title="Issuer">
-                                <span class="badge badge-secondary">
-                                    @scan.DomainCertificate?.IssuerName
-                                </span>
+                                @Html.Raw(IssuerHtml(scan))
                             </td>
                             <td data-title="Thumbprint">
-                                <span class="badge badge-dark">
-                                    @scan.DomainCertificate?.Thumbprint
-                                </span>
+                                @Html.Raw(ThumbprintHtml(scan))
                             </td>
                             <td data-title="Valid">
                                 @if (scan.DomainCertificate != null)
                                 {
                                     @scan.DomainCertificate.ValidNotBefore.ToUniversalTime().ToString("yyyy-MM-dd")
-                                    @:to 
+                                    @:to
                                     @scan.DomainCertificate.ValidNotAfter.ToUniversalTime().ToString("yyyy-MM-dd")
                                 }
                             </td>
@@ -87,5 +83,23 @@
         {
             return @$"<span class=""badge badge-danger"">failure - {scan.ScanStatus}</span>";
         }
+    }
+
+    string IssuerHtml(DomainScan scan)
+    {
+        if (string.IsNullOrWhiteSpace(scan.DomainCertificate?.IssuerName))
+        {
+            return string.Empty;
+        }
+        return @$"<span class=""badge badge-secondary"">{scan.DomainCertificate?.IssuerName}</span>";
+    }
+
+    string ThumbprintHtml(DomainScan scan)
+    {
+        if (string.IsNullOrWhiteSpace(scan.DomainCertificate?.Thumbprint))
+        {
+            return string.Empty;
+        }
+        return @$"<span class=""badge badge-dark"">{scan.DomainCertificate?.Thumbprint}</span>";
     }
 }

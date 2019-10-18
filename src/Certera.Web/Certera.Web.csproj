@@ -15,7 +15,12 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-
+  
+  <ItemGroup>
+    <TrimmerRootAssembly Include="System.Linq" />
+    <TrimmerRootAssembly Include="Microsoft.Extensions.Configuration.Json" />    
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.0.415" />
     <PackageReference Include="Certes" Version="2.3.3" />

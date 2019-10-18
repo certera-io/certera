@@ -26,7 +26,7 @@ namespace Certera.Data.Models
         {
             try
             {
-                return new Uri(Uri).Host;
+                return new Uri(Uri).Authority;
             }
             catch { }
             return Uri;

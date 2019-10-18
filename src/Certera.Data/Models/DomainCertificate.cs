@@ -103,12 +103,17 @@ namespace Certera.Data.Models
             return domainCert;
         }
 
-        public bool IsValidForHostname(string uri)
+        public CertificateValidationResult IsValidForHostname(string uri)
         {
             Uri uriObj;
-            if (Certificate == null || string.IsNullOrWhiteSpace(uri) || !Uri.TryCreate(uri, UriKind.Absolute, out uriObj))
+            if (Certificate == null)
             {
-                return false;
+                return CertificateValidationResult.InvalidCertificate;
+            }
+
+            if (string.IsNullOrWhiteSpace(uri) || !Uri.TryCreate(uri, UriKind.Absolute, out uriObj))
+            {
+                return CertificateValidationResult.InvalidUri;
             }
 
             var sans = ParseSujectAlternativeName(Certificate);
@@ -129,14 +134,20 @@ namespace Certera.Data.Models
 
             if (!matched)
             {
-                return false;
+                return CertificateValidationResult.InvalidSubjectMatch;
             }
 
             if (Certificate.NotAfter <= DateTime.Now || Certificate.NotBefore >= DateTime.Now)
             {
-                return false;
+                return CertificateValidationResult.Expired;
             }
-            return Certificate.Verify();
+
+            if (!Certificate.Verify())
+            {
+                return CertificateValidationResult.VerificationFailure;
+            }
+
+            return CertificateValidationResult.Valid;
         }
 
         public bool ExpiresWithinDays(int days)
@@ -159,27 +170,38 @@ namespace Certera.Data.Models
             var result = new List<string>();
 
             var subjectAlternativeName = cert.Extensions.Cast<X509Extension>()
-                                                .Where(n => n.Oid.FriendlyName.Equals("Subject Alternative Name"))
+                                                .Where(n => n.Oid.Value == "2.5.29.17") // Subject Alternative Name
                                                 .Select(n => new AsnEncodedData(n.Oid, n.RawData))
                                                 .Select(n => n.Format(true))
                                                 .FirstOrDefault();
 
             if (subjectAlternativeName != null)
             {
-                var alternativeNames = subjectAlternativeName.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var alternativeNames = subjectAlternativeName.Split(new[] { "\r\n", "\r", "\n", "," }, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (var alternativeName in alternativeNames)
+                foreach (var san in alternativeNames)
                 {
-                    var groups = Regex.Match(alternativeName, @"^DNS Name=(.*)").Groups;
-
-                    if (groups.Count > 0 && !string.IsNullOrEmpty(groups[1].Value))
+                    // Windows uses DNS Name=<value>
+                    // Linux uses DNS:<value>
+                    var parts = san.Split(new char[] { '=', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length > 0 && !string.IsNullOrEmpty(parts[1]))
                     {
-                        result.Add(groups[1].Value);
+                        result.Add(parts[1]);
                     }
                 }
             }
 
             return result;
         }
+    }
+
+    public enum CertificateValidationResult
+    {
+        Valid,
+        InvalidCertificate,
+        InvalidUri,
+        InvalidSubjectMatch,
+        Expired,
+        VerificationFailure
     }
 }

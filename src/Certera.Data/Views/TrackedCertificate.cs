@@ -17,6 +17,7 @@ namespace Certera.Data.Views
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
         public bool? IsValid { get; set; }
+        public CertificateValidationResult? VerificationResult { get; set; }
         public string Thumbprint { get; set; }
         public AcmeCertType AcmeCertType { get; set; }
         public CertificateSource Source { get; set; }
@@ -28,6 +29,12 @@ namespace Certera.Data.Views
             if (domain.LatestValidDomainScan?.DomainCertificate?.ValidNotAfter != null)
             {
                 daysRemaining = (int)Math.Floor(domain.LatestValidDomainScan.DomainCertificate.ValidNotAfter.Subtract(DateTime.Now).TotalDays);
+            }
+
+            CertificateValidationResult? verificationResult = null;
+            if (domain.LatestValidDomainScan?.DomainCertificate != null)
+            {
+                verificationResult = domain.LatestValidDomainScan.DomainCertificate.IsValidForHostname(domain.Uri);
             }
 
             return new TrackedCertificate
@@ -42,7 +49,8 @@ namespace Certera.Data.Views
                 DateModified = domain.DateLastScanned?.ToLocalTime(),
                 ValidFrom = domain.LatestValidDomainScan?.DomainCertificate?.ValidNotBefore,
                 ValidTo = domain.LatestValidDomainScan?.DomainCertificate?.ValidNotAfter,
-                IsValid = domain.LatestValidDomainScan?.DomainCertificate?.IsValidForHostname(domain.Uri),
+                IsValid = verificationResult == CertificateValidationResult.Valid,
+                VerificationResult = verificationResult,
                 Thumbprint = domain.LatestValidDomainScan?.DomainCertificate?.Thumbprint,
                 Source = CertificateSource.TrackedDomain,
                 PublicKeyHash = domain.LatestValidDomainScan?.DomainCertificate?.Certificate.PublicKeyPinningHash()
@@ -51,6 +59,7 @@ namespace Certera.Data.Views
 
         public static TrackedCertificate FromDomainCertificate(DomainCertificate domainCertificate)
         {
+            var verifyResult = domainCertificate.Certificate.Verify();
             return new TrackedCertificate
             {
                 Id = domainCertificate.DomainCertificateId,
@@ -63,7 +72,8 @@ namespace Certera.Data.Views
                 DateModified = domainCertificate.DateCreated.ToLocalTime(),
                 ValidFrom = domainCertificate.ValidNotBefore,
                 ValidTo = domainCertificate.ValidNotAfter,
-                IsValid = domainCertificate.Certificate.Verify(),
+                IsValid = verifyResult,
+                VerificationResult = verifyResult ? CertificateValidationResult.Valid : CertificateValidationResult.VerificationFailure,
                 Thumbprint = domainCertificate.Thumbprint,
                 Source = CertificateSource.Uploaded,
                 PublicKeyHash = domainCertificate.Certificate.PublicKeyPinningHash()
