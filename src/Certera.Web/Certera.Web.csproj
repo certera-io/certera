@@ -17,8 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <TrimmerRootAssembly Include="System.Linq" />
-    <TrimmerRootAssembly Include="Microsoft.Extensions.Configuration.Json" />    
+    <TrimmerRootAssembly Include="System.Linq.Parallel" />
   </ItemGroup>
   
   <ItemGroup>
