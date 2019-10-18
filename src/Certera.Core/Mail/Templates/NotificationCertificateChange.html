@@ -8,19 +8,30 @@
 </style>
 </head>
 <body>
-    <p>
-        Change detected in the <b>{{Domain}}</b> certificate.<br />
-    </p>    
     <pre>
-New certificate details:
-    Thumbprint:        <b>{{NewThumbprint}}</b>
-    Public Key (hash): <b>{{NewPublicKey}}</b>
-    Valid:             <b>{{NewValidFrom}} to {{NewValidTo}}</b>
+Change detected in the <b>{{Domain}}</b> certificate.
 
-Previous certificate details:
-    Thumbprint:        <b>{{PreviousThumbprint}}</b>
-    Public Key (hash): <b>{{PreviousPublicKey}}</b>
-    Valid:             <b>{{PreviousValidFrom}} to {{PreviousValidTo}}</b>
+<u>New certificate details</u>
+
+<b>Thumbprint</b>
+{{NewThumbprint}}
+
+<b>Public Key (hash)</b>
+{{NewPublicKey}}
+
+<b>Valid</b>
+{{NewValidFrom}} to {{NewValidTo}}
+
+<u>Previous certificate details</u>
+
+<b>Thumbprint</b>
+{{PreviousThumbprint}}
+
+<b>Public Key (hash)</b>
+{{PreviousPublicKey}}
+
+<b>Valid</b>
+{{PreviousValidFrom}} to {{PreviousValidTo}}
     </pre>
 </body>
 </html>

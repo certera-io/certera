@@ -8,14 +8,15 @@
 </style>
 </head>
 <body>
-    <p>
-        There was an error attempting to acquire a certificate for {{Domain}}.<br />
-        <br />
-        Error: {{Error}}<br />
-        <br />
-        Last time certificate acquired: <b>{{LastAcquiryText}}</b><br />
-    </p>
     <pre>
+There was an error attempting to acquire a certificate for <b>{{Domain}}</b>.
+
+<b>Error</b>
+{{Error}}
+
+<b>Last acquired</b> 
+{{LastAcquiryText}}
+
 {{PreviousCertificateDetails}}
     </pre>
 </body>

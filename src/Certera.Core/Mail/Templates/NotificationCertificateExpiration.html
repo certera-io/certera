@@ -8,14 +8,19 @@
 </style>
 </head>
 <body>
-    <p>
-        <b>{{Domain}}</b> certificate is set to expire at {{DateTime}} ({{DaysText}}).<br />
-    </p>
     <pre>
-Current details:
-    Thumbprint:        <b>{{Thumbprint}}</b>
-    Public Key (hash): <b>{{PublicKey}}</b>
-    Valid:             <b>{{ValidFrom}} to {{ValidTo}}</b>
+<b>{{Domain}}</b> certificate is set to expire at {{DateTime}} ({{DaysText}}).
+
+<u>Current details</u>
+
+<b>Thumbprint</b>
+{{Thumbprint}}
+
+<b>Public Key (hash)</b>
+{{PublicKey}}
+
+<b>Valid</b>
+{{ValidFrom}} to {{ValidTo}}
     </pre>
 </body>
 </html>

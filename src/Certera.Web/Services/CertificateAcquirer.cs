@@ -110,12 +110,16 @@ namespace Certera.Web.Services
                         var validTo = lastValidAcmeOrder.DomainCertificate.ValidNotAfter.ToShortDateString();
 
                         var sb = new StringBuilder();
-                        sb.AppendLine("<pre>");
-                        sb.AppendLine("Current certificate details:");
-                        sb.AppendLine($"    Thumbprint:        <b>{thumbprint}</b>");
-                        sb.AppendLine($"    Public Key (hash): <b>{publicKey}</b>");
-                        sb.AppendLine($"    Valid:             <b>{validFrom} to {validTo}</b>");
-                        sb.Append("</pre>");
+                        sb.AppendLine("<u>Current certificate details</u>");
+                        sb.AppendLine();
+                        sb.AppendLine("<b>Thumbprint</b>");
+                        sb.AppendLine($"{thumbprint}");
+                        sb.AppendLine();
+                        sb.AppendLine("<b>Public Key (hash)</b>");
+                        sb.AppendLine($"{publicKey}");
+                        sb.AppendLine();
+                        sb.AppendLine("<b>Valid</b>");
+                        sb.AppendLine($"{validFrom} to {validTo}");
                         previousCertText = sb.ToString();
                     }
 
