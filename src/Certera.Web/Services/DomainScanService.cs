@@ -44,7 +44,6 @@ namespace Certera.Web.Services
                     domainScan?.DomainCertificate?.Thumbprint != null &&
                     lastValidScan?.DomainCertificate?.Thumbprint != null &&
                     lastValidScan.DomainCertificate.Thumbprint != domainScan.DomainCertificate.Thumbprint;
-
             }
 
             if (thumbprintDifferent)
@@ -57,7 +56,7 @@ namespace Certera.Web.Services
                     PreviousDomainCertificate = domain.LatestDomainScan.DomainCertificate
                 };
             }
-            
+
             // Add the scan result when there hasn't been a successful scan yet (i.e. first time scanning)
             // or when the thumbprint is different (i.e. the cert changed)
             var add = !domainHasScan || thumbprintDifferent;

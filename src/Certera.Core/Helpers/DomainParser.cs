@@ -21,12 +21,12 @@ namespace Certera.Core.Helpers
             {
                 return null;
             }
-            
+
             if (host.Contains("*."))
             {
                 host = host.Replace("*.", "");
             }
-            
+
             if (_domainParser.IsValidDomain(host))
             {
                 var domain = _domainParser.Get(host);
