@@ -166,7 +166,8 @@ namespace Certera.Web
                     SecurePolicy = CookieSecurePolicy.SameAsRequest,
                     IsEssential = true
                 };
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.SlidingExpiration = true;
                 options.LoginPath = "/account/login";
                 options.LogoutPath = "/account/logout";
                 options.AccessDeniedPath = "/account/accessdenied";
