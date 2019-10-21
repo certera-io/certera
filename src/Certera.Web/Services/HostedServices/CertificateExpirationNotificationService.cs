@@ -84,14 +84,14 @@ namespace Certera.Web.Services.HostedServices
                         var dataContext = scope.ServiceProvider.GetService<DataContext>();
 
                         var now = DateTime.Now;
-                        var in30Days = now.AddDays(30).Date;
+                        var in30Days = now.AddDays(31).Date;
 
                         var certsExpiring = dataContext.GetTrackedCertificates()
                             .Where(x => x.CertId != 0 && x.ValidTo <= in30Days && x.ValidTo >= now)
                             .OrderBy(x => x.ValidTo)
                             .ToList();
 
-                        var expirationBuckets = GroupCertsIntoBuckets(certsExpiring);
+                        var expirationBuckets = GroupCertsIntoBuckets(now, certsExpiring);
 
                         var certIds = certsExpiring
                             .Select(x => x.CertId)
@@ -211,28 +211,49 @@ namespace Certera.Web.Services.HostedServices
             }
         }
 
-        private static Dictionary<NotificationEvent, List<TrackedCertificate>> GroupCertsIntoBuckets(List<TrackedCertificate> certsExpiring)
+        public static Dictionary<NotificationEvent, List<TrackedCertificate>> GroupCertsIntoBuckets(DateTime now, List<TrackedCertificate> certsExpiring)
         {
-            var now = DateTime.Now;
-            var in1Day = now.AddDays(1).Date;
-            var in3Days = now.AddDays(3).Date;
-            var in7Days = now.AddDays(7).Date;
-            var in14Days = now.AddDays(14).Date;
-            var in30Days = now.AddDays(30).Date;
+            // add an extra day because we're using .Date, which defaults to 12:00 AM of the given day.
+            var in1Day = now.AddDays(2).Date;
+            var in3Days = now.AddDays(4).Date;
+            var in7Days = now.AddDays(8).Date;
+            var in14Days = now.AddDays(15).Date;
+            var in30Days = now.AddDays(31).Date;
 
-            return new Dictionary<NotificationEvent, List<TrackedCertificate>>
+            var dict = new Dictionary<NotificationEvent, List<TrackedCertificate>>
             {
-                { NotificationEvent.ExpirationAlert1Day,
-                    certsExpiring.Where(x => x.ValidTo <= in1Day).ToList() },
-                { NotificationEvent.ExpirationAlert3Days,
-                    certsExpiring.Where(x => x.ValidTo <= in3Days && x.ValidTo > in1Day).ToList() },
-                { NotificationEvent.ExpirationAlert7Days,
-                    certsExpiring.Where(x => x.ValidTo <= in7Days && x.ValidTo > in3Days).ToList() },
-                { NotificationEvent.ExpirationAlert14Days,
-                    certsExpiring.Where(x => x.ValidTo <= in14Days && x.ValidTo > in7Days).ToList() },
-                { NotificationEvent.ExpirationAlert30Days,
-                    certsExpiring.Where(x => x.ValidTo <= in30Days && x.ValidTo > in14Days).ToList() }
+                { NotificationEvent.ExpirationAlert1Day, new List<TrackedCertificate>() },
+                { NotificationEvent.ExpirationAlert3Days, new List<TrackedCertificate>() },
+                { NotificationEvent.ExpirationAlert7Days, new List<TrackedCertificate>() },
+                { NotificationEvent.ExpirationAlert14Days, new List<TrackedCertificate>() },
+                { NotificationEvent.ExpirationAlert30Days, new List<TrackedCertificate>() }
             };
+
+            foreach (var cert in certsExpiring)
+            {
+                if (cert.ValidTo <= in1Day && cert.ValidTo > now)
+                {
+                    dict[NotificationEvent.ExpirationAlert1Day].Add(cert);
+                }
+                else if (cert.ValidTo <= in3Days && cert.ValidTo > in1Day)
+                {
+                    dict[NotificationEvent.ExpirationAlert3Days].Add(cert);
+                }
+                else if (cert.ValidTo <= in7Days && cert.ValidTo > in3Days)
+                {
+                    dict[NotificationEvent.ExpirationAlert7Days].Add(cert);
+                }
+                else if (cert.ValidTo <= in14Days && cert.ValidTo > in7Days)
+                {
+                    dict[NotificationEvent.ExpirationAlert14Days].Add(cert);
+                }
+                else if (cert.ValidTo <= in30Days && cert.ValidTo > in14Days)
+                {
+                    dict[NotificationEvent.ExpirationAlert30Days].Add(cert);
+                }
+            }
+
+            return dict;
         }
 
         private static string GetNotificationEventKey(long userId, long certId, NotificationEvent notificationEvent)
