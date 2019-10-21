@@ -62,13 +62,12 @@ namespace Certera.Web.Middleware
 
             var ips = ipList.Split(',',';', StringSplitOptions.RemoveEmptyEntries);
 
-            var bytes = remoteIp.GetAddressBytes();
             var isBadIP = true;
 
             foreach (var address in ips)
             {
-                var testIp = IPAddress.Parse(address);
-                if (testIp.GetAddressBytes().SequenceEqual(bytes))
+                var network = IPNetwork.Parse(address, CidrGuess.ClassLess);
+                if (network.Contains(remoteIp))
                 {
                     isBadIP = false;
                     break;
