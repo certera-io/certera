@@ -21,9 +21,15 @@ namespace Certera.Web.Controllers
         }
 
         [HttpGet("{name}")]
-        public IActionResult Index(string name, bool staging = false,
-            string format = "pem", string pfxPassword = "")
+        public IActionResult Index(string name, string pfxPassword, bool staging = false,
+            string format = "pem")
         {
+            if (string.Equals(format, "pfx", StringComparison.OrdinalIgnoreCase) &&
+                string.IsNullOrWhiteSpace(pfxPassword))
+            {
+                return BadRequest("pfxPassword must be specified");
+            }
+
             var acmeCert = _dataContext.GetAcmeCertificate(name, staging);
 
             if (acmeCert == null)
@@ -42,7 +48,7 @@ namespace Certera.Web.Controllers
                     var certChain = new CertificateChain(acmeCert.LatestValidAcmeOrder.RawDataPem);
                     var key = KeyFactory.FromPem(acmeCert.Key.RawData);
                     var pfxBuilder = certChain.ToPfx(key);
-                    var pfx = pfxBuilder.Build(acmeCert.Subject, pfxPassword ?? string.Empty);
+                    var pfx = pfxBuilder.Build(acmeCert.Subject, pfxPassword);
 
                     return new ContentResult
                     {
