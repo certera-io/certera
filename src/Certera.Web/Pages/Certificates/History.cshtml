@@ -47,7 +47,10 @@
                                 </div>
                             </td>
                             <td data-title="Thumbprint">
+                                @if (!string.IsNullOrWhiteSpace(order.DomainCertificate?.Thumbprint))
+                                {
                                 <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
+                                }
                             </td>
                             <td data-title="Valid">
                                 @if (order.DomainCertificate != null)
