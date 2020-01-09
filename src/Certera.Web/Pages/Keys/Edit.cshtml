@@ -38,5 +38,36 @@
                 <button type="submit" class="button-small">Save</button>
             </div>
         </form>
+        <br />
+        <div>
+            <dl>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Key.ApiKey1)
+                </dt>
+                <dd>
+                    <div>
+                        @Html.DisplayFor(model => model.Key.ApiKey1)
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.Key.KeyId" />
+                        <input type="hidden" name="key" value="apikey1" />
+                        <button type="submit" asp-page-handler="RotateKey" class="button-small">Change</button>
+                    </form>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Key.ApiKey2)
+                </dt>
+                <dd>
+                    <div>
+                        @Html.DisplayFor(model => model.Key.ApiKey2)
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.Key.KeyId" />
+                        <input type="hidden" name="key" value="apikey2" />
+                        <button type="submit" asp-page-handler="RotateKey" class="button-small">Change</button>
+                    </form>
+                </dd>
+            </dl>
+        </div>
     </div>
 </div>

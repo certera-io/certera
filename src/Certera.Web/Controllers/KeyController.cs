@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Certera.Web.Controllers
 {
-    [ApiKeyAuthorize]
+    [KeyApiKeyAuthorize]
     [Route("api/[controller]")]
     public class KeyController : Controller
     {
@@ -29,6 +30,13 @@ namespace Certera.Web.Controllers
             if (key == null)
             {
                 return NotFound("Key with that name does not exist");
+            }
+
+            // Ensure key matches the one used during authentication
+            var id = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.Equals(key.KeyId.ToString(), id))
+            {
+                return StatusCode(403, "Status Code: 403; Forbidden");
             }
 
             switch (format?.ToLower() ?? "pem")

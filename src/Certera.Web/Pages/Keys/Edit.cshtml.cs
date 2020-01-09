@@ -76,6 +76,35 @@ namespace Certera.Web.Pages.Keys
             return RedirectToPage("./Index");
         }
 
+
+
+        public async Task<IActionResult> OnPostRotateKeyAsync(long id, string key)
+        {
+            // To not get validation errors due to other post handler
+            ModelState.Clear();
+
+            Key = await _context.Keys.FirstOrDefaultAsync(m => m.KeyId == id);
+
+            if (Key == null)
+            {
+                return NotFound();
+            }
+
+            switch (key)
+            {
+                case "apikey1":
+                    Key.ApiKey1 = ApiKeyGenerator.CreateApiKey();
+                    break;
+                case "apikey2":
+                    Key.ApiKey2 = ApiKeyGenerator.CreateApiKey();
+                    break;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Page();
+        }
+        
         private bool KeyExists(long id)
         {
             return _context.Keys.Any(e => e.KeyId == id);

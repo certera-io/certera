@@ -17,34 +17,6 @@
     <partial name="_SmtpOptionsMissing" />
     <partial name="_StatusMessage" for="StatusMessage" />
     <div class="row">
-        <h3>API</h3>
-        <dl>
-            <dt>
-                @Html.DisplayNameFor(model => model.ApplicationUser.ApiKey1)
-            </dt>
-            <dd>
-                <div>
-                    @Html.DisplayFor(model => model.ApplicationUser.ApiKey1)
-                </div>
-                <form method="post">
-                    <input type="hidden" name="key" value="apikey1" />
-                    <button type="submit" class="button-small">Change</button>
-                </form>
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.ApplicationUser.ApiKey2)
-            </dt>
-            <dd>
-                <div>
-                    @Html.DisplayFor(model => model.ApplicationUser.ApiKey2)
-                </div>
-                <form method="post">
-                    <input type="hidden" name="key" value="apikey2" />
-                    <button type="submit" class="button-small">Change</button>
-                </form>
-            </dd>
-        </dl>
-        <hr />
         <h3>SMTP</h3>
         <dl>
             <dt>

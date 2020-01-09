@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Certera.Data;
+using Certera.Data.Models;
+using Certera.Web.Extensions;
+using Certera.Web.Services;
+using Certes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Certera.Data;
-using Certera.Data.Models;
-using Microsoft.AspNetCore.Http;
-using Certera.Web.Extensions;
-using Certes;
+using System;
+using System.Linq;
 using System.Text;
-using Certera.Web.Services;
+using System.Threading.Tasks;
 
 namespace Certera.Web.Pages.Keys
 {
@@ -33,6 +31,7 @@ namespace Certera.Web.Pages.Keys
 
         [BindProperty]
         public Key Key { get; set; }
+
         [TempData]
         public string StatusMessage { get; set; }
 
@@ -99,6 +98,9 @@ namespace Certera.Web.Pages.Keys
                 ModelState.AddModelError(string.Empty, "You must pick a key algorithm, enter in the PEM or upload a key");
                 return Page();
             }
+
+            Key.ApiKey1 = ApiKeyGenerator.CreateApiKey();
+            Key.ApiKey2 = ApiKeyGenerator.CreateApiKey();
 
             _context.Keys.Add(Key);
             await _context.SaveChangesAsync();

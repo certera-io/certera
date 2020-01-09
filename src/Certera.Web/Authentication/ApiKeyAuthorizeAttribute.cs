@@ -2,11 +2,19 @@
 
 namespace Certera.Web.Authentication
 {
-    public class ApiKeyAuthorizeAttribute : AuthorizeAttribute
+    public class CertApiKeyAuthorizeAttribute : AuthorizeAttribute
     {
-        public ApiKeyAuthorizeAttribute()
+        public CertApiKeyAuthorizeAttribute()
         {
-            AuthenticationSchemes = ApiKeyAuthenticationHandler.AuthScheme;
+            AuthenticationSchemes = CertApiKeyAuthenticationHandler.AuthScheme;
+        }
+    }
+
+    public class KeyApiKeyAuthorizeAttribute : AuthorizeAttribute
+    {
+        public KeyApiKeyAuthorizeAttribute()
+        {
+            AuthenticationSchemes = KeyApiKeyAuthenticationHandler.AuthScheme;
         }
     }
 }

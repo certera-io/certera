@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -59,7 +60,12 @@ namespace Certera.Data.Models
 
         public virtual ICollection<AcmeOrder> AcmeOrders { get; set; } = new List<AcmeOrder>();
 
-        
+        [DisplayName("API Key 1")]
+        public string ApiKey1 { get; set; }
+
+        [DisplayName("API Key 2")]
+        public string ApiKey2 { get; set; }
+
         [NotMapped]
         public AcmeOrder LatestValidAcmeOrder { get; set; }
     }

@@ -42,6 +42,7 @@ namespace Certera.Web.Pages.Certificates
 
         [BindProperty]
         public AcmeCertificate AcmeCertificate { get; set; }
+
         [TempData]
         public string StatusMessage { get; set; }
 
@@ -64,6 +65,9 @@ namespace Certera.Web.Pages.Certificates
 
                 AcmeCertificate.KeyId = key.KeyId;
             }
+
+            AcmeCertificate.ApiKey1 = ApiKeyGenerator.CreateApiKey();
+            AcmeCertificate.ApiKey2 = ApiKeyGenerator.CreateApiKey();
 
             _context.AcmeCertificates.Add(AcmeCertificate);
             await _context.SaveChangesAsync();

@@ -40,5 +40,32 @@ namespace Certera.Web.Pages.Certificates
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostAsync(long id, string key)
+        {
+            AcmeCertificate = await _context.AcmeCertificates
+                .Include(a => a.AcmeOrders)
+                .ThenInclude(o => o.DomainCertificate)
+                .FirstOrDefaultAsync(m => m.AcmeCertificateId == id);
+
+            if (AcmeCertificate == null)
+            {
+                return NotFound();
+            }
+
+            switch (key)
+            {
+                case "apikey1":
+                    AcmeCertificate.ApiKey1 = ApiKeyGenerator.CreateApiKey();
+                    break;
+                case "apikey2":
+                    AcmeCertificate.ApiKey2 = ApiKeyGenerator.CreateApiKey();
+                    break;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Page();
+        }
     }
 }

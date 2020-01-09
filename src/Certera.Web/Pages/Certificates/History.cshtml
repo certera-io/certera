@@ -28,6 +28,37 @@
             <h3>@Model.AcmeCertificate.Name</h3>
             <h4>Subject: @Model.AcmeCertificate.Subject</h4>
 
+            <div>
+                <dl>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey1)
+                    </dt>
+                    <dd>
+                        <div>
+                            @Html.DisplayFor(model => model.AcmeCertificate.ApiKey1)
+                        </div>
+                        <form method="post">
+                            <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                            <input type="hidden" name="key" value="apikey1" />
+                            <button type="submit" class="button-small">Change</button>
+                        </form>
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey2)
+                    </dt>
+                    <dd>
+                        <div>
+                            @Html.DisplayFor(model => model.AcmeCertificate.ApiKey2)
+                        </div>
+                        <form method="post">
+                            <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                            <input type="hidden" name="key" value="apikey2" />
+                            <button type="submit" class="button-small">Change</button>
+                        </form>
+                    </dd>
+                </dl>
+            </div>
+
             <table>
                 <thead>
                     <tr>
@@ -49,7 +80,7 @@
                             <td data-title="Thumbprint">
                                 @if (!string.IsNullOrWhiteSpace(order.DomainCertificate?.Thumbprint))
                                 {
-                                <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
+                                    <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
                                 }
                             </td>
                             <td data-title="Valid">
@@ -61,7 +92,7 @@
                                 }
                             </td>
                             <td data-title="Status">
-                                @Html.Raw(StatusBadge(order)) 
+                                @Html.Raw(StatusBadge(order))
                                 @order.Errors?.Replace("\r\n", "<br />")
                             </td>
                         </tr>

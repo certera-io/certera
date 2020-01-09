@@ -8,11 +8,15 @@ namespace Certera.Data
     public partial class DataContext :
         IdentityDbContext<ApplicationUser, Role, long, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
+        public DataContext()
+        {
+        }
+
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
         }
-
+        
         static DataContext()
         {
             // required to initialise native SQLite libraries on some platforms.
@@ -24,7 +28,10 @@ namespace Certera.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(optionsBuilder);
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite("Data Source=Certera.db");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -54,7 +61,7 @@ namespace Certera.Data
     public class UserLogin : IdentityUserLogin<long> { }
     public class UserRole : IdentityUserRole<long> { }
     public class UserClaim : IdentityUserClaim<long> { }
-    
+
     public class Role : IdentityRole<long>
     {
         public Role() { }

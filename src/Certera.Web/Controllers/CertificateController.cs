@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Certera.Web.Controllers
 {
-    [ApiKeyAuthorize]
+    [CertApiKeyAuthorize]
     [Route("api/[controller]")]
     public class CertificateController : Controller
     {
@@ -40,6 +41,13 @@ namespace Certera.Web.Controllers
             if (acmeCert.LatestValidAcmeOrder == null)
             {
                 return NotFound("Certificate does not yet exist");
+            }
+
+            // Ensure cert matches the one used during authentication
+            var id = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.Equals(acmeCert.AcmeCertificateId.ToString(), id))
+            {
+                return StatusCode(403, "Status Code: 403; Forbidden");
             }
 
             switch (format?.ToLower() ?? "pem")

@@ -128,8 +128,12 @@ namespace Certera.Web
             });
 
             services.AddAuthentication()
-                .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
-                    ApiKeyAuthenticationHandler.AuthScheme,
+                .AddScheme<AuthenticationSchemeOptions, KeyApiKeyAuthenticationHandler>(
+                    KeyApiKeyAuthenticationHandler.AuthScheme,
+                    "API Key",
+                    null)
+                .AddScheme<AuthenticationSchemeOptions, CertApiKeyAuthenticationHandler>(
+                    CertApiKeyAuthenticationHandler.AuthScheme,
                     "API Key",
                     null);
 

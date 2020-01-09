@@ -1,6 +1,7 @@
 ﻿using Certes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Certera.Data.Models
@@ -30,6 +31,12 @@ namespace Certera.Data.Models
 
         [Display(Name = "Rotation")]
         public DateTimeOffset? DateRotationReminder { get; set; }
+
+        [DisplayName("API Key 1")]
+        public string ApiKey1 { get; set; }
+
+        [DisplayName("API Key 2")]
+        public string ApiKey2 { get; set; }
 
         public virtual ICollection<KeyHistory> KeyHistories { get; set; } = new List<KeyHistory>();
         public virtual ICollection<AcmeAccount> AcmeAccounts { get; set; } = new List<AcmeAccount>();

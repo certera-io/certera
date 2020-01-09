@@ -55,6 +55,12 @@ namespace Certera.Data
                 .WithMany(x => x.AcmeCertificates)
                 .HasForeignKey(x => x.KeyId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<AcmeCertificate>()
+                .HasIndex(x => x.ApiKey1)
+                .IsUnique();
+            builder.Entity<AcmeCertificate>()
+                .HasIndex(x => x.ApiKey2)
+                .IsUnique();
 
             builder.Entity<AcmeRequest>()
                 .Property(x => x.DateCreated)
@@ -108,6 +114,12 @@ namespace Certera.Data
             builder.Entity<Key>()
                 .Property(x => x.RawData)
                 .IsRequired();
+            builder.Entity<Key>()
+                .HasIndex(x => x.ApiKey1)
+                .IsUnique();
+            builder.Entity<Key>()
+                .HasIndex(x => x.ApiKey2)
+                .IsUnique();
 
             builder.Entity<KeyHistory>()
                 .Property(x => x.DateOperation)
