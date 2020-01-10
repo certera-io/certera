@@ -17,6 +17,17 @@
     <partial name="_SmtpOptionsMissing" />
     <partial name="_StatusMessage" for="StatusMessage" />
     <div class="row">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <label>Days before expiration to renew certificate</label>
+                <input type="number" asp-for="RenewCertificateDays" />
+                <span asp-validation-for="RenewCertificateDays" class="text-danger"></span>
+            </div>
+            <div>
+                <button type="submit" class="button-small">Save</button>
+            </div>
+        </form>
         <h3>SMTP</h3>
         <dl>
             <dt>

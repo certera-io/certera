@@ -1,5 +1,4 @@
-﻿using Certera.Core.Mail;
-using Certera.Data;
+﻿using Certera.Data;
 using Certera.Web.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -73,11 +72,14 @@ namespace Certera.Web.Services.HostedServices
                     // Get all certificates to be considered
                     var allAcmeCerts = dataContext.GetAcmeCertificates();
 
-                    // Find all certificates that have expiration times less than 30 days.
+                    // Find all certificates that have expiration times less than x days.
                     // or that haven't had a request yet.
+
+                    var days = dataContext.GetSetting<int>(Settings.RenewCertificateDays, 30);
+
                     var allCertsNeedingRenewals = allAcmeCerts.Where(x => x.LatestValidAcmeOrder?.Certificate == null ||
                         (x.LatestValidAcmeOrder?.DomainCertificate != null &&
-                         x.LatestValidAcmeOrder.DomainCertificate.ExpiresWithinDays(30)))
+                         x.LatestValidAcmeOrder.DomainCertificate.ExpiresWithinDays(days)))
                         .ToList();
 
                     // For each cert, enqueue them to be acquired or renewed

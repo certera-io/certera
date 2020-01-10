@@ -365,6 +365,55 @@ namespace Certera.Data
                 .ToList();
         }
         #endregion
+
+        public T GetSetting<T>(Settings setting, T @default)
+        {
+            var settingRecord = Settings.FirstOrDefault(x => x.Name == setting.ToString());
+
+            if (settingRecord == null)
+            {
+                Settings.Add(new Setting
+                {
+                    Name = setting.ToString(),
+                    Value = @default.ToString()
+                });
+
+                SaveChanges();
+
+                return @default;
+            }
+            else
+            {
+                return (T)Convert.ChangeType(settingRecord?.Value, typeof(T));
+            }
+        }
+
+        public void SetSetting<T>(Settings setting, T value)
+        {
+            var settingRecord = Settings.FirstOrDefault(x => x.Name == setting.ToString());
+
+            // Add, if null
+            if (settingRecord == null)
+            {
+                Settings.Add(new Setting
+                {
+                    Name = setting.ToString(),
+                    Value = value.ToString()
+                });
+            }
+            // Update, if exists
+            else
+            {
+                settingRecord.Value = value.ToString();
+            }
+
+            SaveChanges();
+        }
+    }
+
+    public enum Settings
+    {
+        RenewCertificateDays = 0
     }
 
     public class AcmeCertOrderContainer
