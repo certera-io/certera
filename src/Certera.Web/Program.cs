@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -113,8 +114,11 @@ namespace Certera.Web
 
                 var env = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
 
-                if (env.IsProduction() ||
-                    !(context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
+                // Run a DB migration if the DB doesn't exist or there are pending migrations
+                var migrate = !(context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists() ||
+                    context.Database.GetPendingMigrations().Any();
+
+                if (migrate)
                 {
                     context.Database.Migrate();
                 }
