@@ -61,7 +61,7 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggesti
 dotnet_style_readonly_field = true:suggestion
 
 # Parameter preferences
-dotnet_code_quality_unused_parameters = all:suggestion
+dotnet_code_quality_unused_parameters = all:silent
 
 #### C# Coding Conventions ####
 
@@ -231,3 +231,27 @@ dotnet_diagnostic.CA1307.severity = suggestion
 dotnet_diagnostic.CA1054.severity = suggestion
 # CA2227: Collection properties should be read only
 dotnet_diagnostic.CA2227.severity = suggestion
+
+# CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = silent
+
+# CA1052: Static class
+dotnet_diagnostic.CA1052.severity = silent
+
+# CA1801: Unused parameter
+dotnet_diagnostic.CA1801.severity = silent
+
+# RCS1075: Avoid empty catch clause that catches System.Exception.
+dotnet_diagnostic.RCS1075.severity = silent
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = silent
+
+# CA1304: Specify CultureInfo
+dotnet_diagnostic.CA1304.severity = silent
+
+# RCS1102: Make class static.
+dotnet_diagnostic.RCS1102.severity = silent
+
+# RCS1163: Unused parameter.
+dotnet_diagnostic.RCS1163.severity = silent

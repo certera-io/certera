@@ -46,8 +46,8 @@ namespace Certera.Web.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext httpContext, 
-            ILogger<SetupAcmeCertMiddleware> logger,            
+        public async Task Invoke(HttpContext httpContext,
+            ILogger<SetupAcmeCertMiddleware> logger,
             CertesAcmeProvider certes,
             DataContext dataContext,
             IOptionsSnapshot<HttpServer> httpServerOptions)
