@@ -49,7 +49,8 @@ namespace Certera.Web.Pages.Setup
                 UserName = Setup.Email,
                 Email = Setup.Email,
                 ApiKey1 = ApiKeyGenerator.CreateApiKey(),
-                ApiKey2 = ApiKeyGenerator.CreateApiKey()
+                ApiKey2 = ApiKeyGenerator.CreateApiKey(),
+                EmailConfirmed = true
             };
             var result = await _userManager.CreateAsync(user, Setup.Password);
 

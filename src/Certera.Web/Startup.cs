@@ -91,7 +91,7 @@ namespace Certera.Web
 
             services.Configure<RouteOptions>(options =>
             {
-                options.LowercaseQueryStrings = true;
+                options.LowercaseQueryStrings = false; // Setting to true modifies to pwd reset token
                 options.LowercaseUrls = true;
             });
 
