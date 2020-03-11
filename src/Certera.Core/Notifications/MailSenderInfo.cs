@@ -1,4 +1,4 @@
-﻿namespace Certera.Core.Mail
+﻿namespace Certera.Core.Notifications
 {
     public class MailSenderInfo
     {

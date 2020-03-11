@@ -1,0 +1,19 @@
+﻿{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "There was an error attempting to acquire a certificate for *{{Domain}}*."
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+
+        "type": "mrkdwn",
+        "text": "*Error:*\n{{Error}}\n\n*Last acquired:*\n{{LastAcquiryText}}\n\n{{PreviousCertificateDetails}}"
+      }
+    }
+  ]
+}

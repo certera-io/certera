@@ -1,5 +1,5 @@
 ﻿@using Microsoft.Extensions.Options
-@using Certera.Core.Mail
+@using Certera.Core.Notifications
 @inject IOptionsSnapshot<MailSenderInfo> MailSenderInfo
 
 @if (string.IsNullOrWhiteSpace(MailSenderInfo.Value.Host))

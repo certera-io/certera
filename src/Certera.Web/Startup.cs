@@ -1,4 +1,4 @@
-using Certera.Core.Mail;
+using Certera.Core.Notifications;
 using Certera.Data;
 using Certera.Web.AcmeProviders;
 using Certera.Web.Authentication;
@@ -77,6 +77,7 @@ namespace Certera.Web
             services.AddTransient<CertesAcmeProvider>();
             services.AddTransient<MailSender>();
             services.AddTransient<CertificateAcquirer>();
+            services.AddTransient<NotificationService>();
             var lookupClient = new LookupClient();
             services.AddSingleton<ILookupClient>(lookupClient);
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

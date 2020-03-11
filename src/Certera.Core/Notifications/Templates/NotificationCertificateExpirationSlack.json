@@ -1,0 +1,19 @@
+﻿{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*{{Domain}}* certificate is set to expire on {{DateTime}} ({{DaysText}})."
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+
+        "type": "mrkdwn",
+        "text": "*Current details*\n*Thumbprint:*\n{{Thumbprint}}\n*Public Key (hash):*\n{{PublicKey}}\n*Valid:*\n{{ValidFrom}} to {{ValidTo}}"
+      }
+    }
+  ]
+}

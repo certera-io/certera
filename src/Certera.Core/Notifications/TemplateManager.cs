@@ -4,19 +4,25 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Certera.Core.Mail
+namespace Certera.Core.Notifications
 {
     public static class TemplateManager
     {
-        public static string NotificationCertificateAcquisitionFailure { get; private set; }
-        public static string NotificationCertificateChange { get; private set; }
-        public static string NotificationCertificateExpiration { get; private set; }
+        public static string NotificationCertificateAcquisitionFailureEmail { get; private set; }
+        public static string NotificationCertificateAcquisitionFailureSlack { get; private set; }
+        public static string NotificationCertificateChangeEmail { get; private set; }
+        public static string NotificationCertificateChangeSlack { get; private set; }
+        public static string NotificationCertificateExpirationEmail { get; private set; }
+        public static string NotificationCertificateExpirationSlack { get; private set; }
 
         static TemplateManager()
         {
-            NotificationCertificateAcquisitionFailure = ReadManifestData("NotificationCertificateAcquisitionFailure.html");
-            NotificationCertificateChange = ReadManifestData("NotificationCertificateChange.html");
-            NotificationCertificateExpiration = ReadManifestData("NotificationCertificateExpiration.html");
+            NotificationCertificateAcquisitionFailureEmail = ReadManifestData("NotificationCertificateAcquisitionFailureEmail.html");
+            NotificationCertificateAcquisitionFailureSlack = ReadManifestData("NotificationCertificateAcquisitionFailureSlack.json");
+            NotificationCertificateChangeEmail = ReadManifestData("NotificationCertificateChangeEmail.html");
+            NotificationCertificateChangeSlack = ReadManifestData("NotificationCertificateChangeSlack.json");
+            NotificationCertificateExpirationEmail = ReadManifestData("NotificationCertificateExpirationEmail.html");
+            NotificationCertificateExpirationSlack = ReadManifestData("NotificationCertificateExpirationSlack.json");
         }
 
         public static string BuildTemplate(string template, object parameters)

@@ -1,0 +1,19 @@
+﻿{
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Change detected in the *{{Domain}}* certificate."
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+
+        "type": "mrkdwn",
+        "text": "*New certificate details*\n*Thumbprint:*\n{{NewThumbprint}}\n*Public Key (hash):*\n{{NewPublicKey}}\n*Valid:*\n{{NewValidFrom}} to {{NewValidTo}}\n\n*Previous certificate details*\n*Thumbprint:*\n{{PreviousThumbprint}}\n*Public Key (hash):*\n{{PreviousPublicKey}}\n*Valid:*\n{{PreviousValidFrom}} to {{PreviousValidTo}}"
+      }
+    }
+  ]
+}

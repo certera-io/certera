@@ -16,7 +16,8 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="NotificationSetting.NotificationSettingId" />
-            <p>Select which kinds of alerts you'd like to receive.</p>
+
+            <p>Choose which kinds of alerts you'd like to receive.</p>
             <div>
                 <input asp-for="NotificationSetting.ExpirationAlerts" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlerts)
             </div>
@@ -27,6 +28,34 @@
                 <input asp-for="NotificationSetting.AcquisitionFailureAlerts" /> @Html.DisplayNameFor(model => model.NotificationSetting.AcquisitionFailureAlerts)
             </div>
             <hr />
+
+
+            <p>Choose how you'd like to receive the alerts.</p>
+            <div>
+                <input asp-for="NotificationSetting.SendEmailNotification" /> Email
+                <label>Recipients</label>
+                <input readonly asp-for="NotificationSetting.ApplicationUser.Email" />
+
+                <label>Additional Recipients</label>
+                <div>
+                    <small class="text-muted">(e.g. bob@mysite.com; steve@mysite.com)</small>
+                </div>
+                <input asp-for="NotificationSetting.AdditionalRecipients" />
+                <span asp-validation-for="NotificationSetting.AdditionalRecipients" class="text-danger"></span>
+
+
+
+                <input asp-for="NotificationSetting.SendSlackNotification" /> Slack Webhook
+                <label>Slack Webhook URL</label>
+                <div>
+                    <small class="text-muted">(e.g. https://mysite.com/endpoint)</small>
+                </div>
+                <input asp-for="NotificationSetting.SlackWebhookUrl" />
+                <span asp-validation-for="NotificationSetting.SlackWebhookUrl" class="text-danger"></span>
+            </div>
+            <hr />
+
+
             <p>Control how frequently you'd like to receive certificate expiration alerts.</p>
             <div>
                 <input asp-for="NotificationSetting.ExpirationAlert1Day" /> @Html.DisplayNameFor(model => model.NotificationSetting.ExpirationAlert1Day)

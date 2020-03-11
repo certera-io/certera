@@ -1,8 +1,7 @@
-﻿using Certera.Core.Mail;
+﻿using Certera.Core.Notifications;
 using Certera.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
@@ -18,7 +17,7 @@ namespace Certera.Web.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly MailSender _mailSender;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, MailSender mailSender, 
+        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, MailSender mailSender,
             IOptionsSnapshot<MailSenderInfo> mailInfo)
         {
             _userManager = userManager;

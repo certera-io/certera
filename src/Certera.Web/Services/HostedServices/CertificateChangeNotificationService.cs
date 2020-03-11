@@ -1,6 +1,4 @@
-﻿using Certera.Core.Extensions;
-using Certera.Core.Mail;
-using Certera.Data;
+﻿using Certera.Data;
 using Certera.Web.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,17 +66,8 @@ namespace Certera.Web.Services.HostedServices
                         return;
                     }
 
-                    var mailSenderInfo = scope.ServiceProvider.GetService<IOptionsSnapshot<MailSenderInfo>>();
-                    if (string.IsNullOrWhiteSpace(mailSenderInfo?.Value?.Host))
+                    using (var notificationService = scope.ServiceProvider.GetService<NotificationService>())
                     {
-                        _logger.LogWarning("SMTP not configured. Unable to send certificate change notifications.");
-                        return;
-                    }
-
-                    using (var mailSender = scope.ServiceProvider.GetService<MailSender>())
-                    {
-                        mailSender.Initialize(mailSenderInfo.Value);
-
                         var dataContext = scope.ServiceProvider.GetService<DataContext>();
 
                         // Get the change events that were created when scans occurred
@@ -90,50 +78,12 @@ namespace Certera.Web.Services.HostedServices
                             .Where(x => x.DateProcessed == null)
                             .ToList();
 
-                        var usersToNotify = dataContext.NotificationSettings
+                        var notificationSettings = dataContext.NotificationSettings
                             .Include(x => x.ApplicationUser)
-                            .Where(x => x.ChangeAlerts == true);
+                            .Where(x => x.ChangeAlerts == true)
+                            .ToList();
 
-                        foreach (var evt in events)
-                        {
-                            foreach (var user in usersToNotify)
-                            {
-                                try
-                                {
-                                    var recipients = new List<string>();
-                                    recipients.Add(user.ApplicationUser.Email);
-                                    if (!string.IsNullOrWhiteSpace(user.AdditionalRecipients))
-                                    {
-                                        recipients.AddRange(user.AdditionalRecipients.Split(',', ';', StringSplitOptions.RemoveEmptyEntries));
-                                    }
-
-                                    _logger.LogInformation($"Sending change notification email for {evt.Domain.HostAndPort()}");
-
-                                    mailSender.Send($"[certera] {evt.Domain.HostAndPort()} - certificate change notification",
-                                        TemplateManager.BuildTemplate(TemplateManager.NotificationCertificateChange,
-                                        new
-                                        {
-                                            Domain = evt.Domain.HostAndPort(),
-                                            NewThumbprint = evt.NewDomainCertificate.Thumbprint,
-                                            NewPublicKey = evt.NewDomainCertificate.Certificate.PublicKeyPinningHash(),
-                                            NewValidFrom = evt.NewDomainCertificate.ValidNotBefore.ToShortDateString(),
-                                            NewValidTo = evt.NewDomainCertificate.ValidNotAfter.ToShortDateString(),
-                                            PreviousThumbprint = evt.PreviousDomainCertificate.Thumbprint,
-                                            PreviousPublicKey = evt.PreviousDomainCertificate.Certificate.PublicKeyPinningHash(),
-                                            PreviousValidFrom = evt.PreviousDomainCertificate.ValidNotBefore.ToShortDateString(),
-                                            PreviousValidTo = evt.PreviousDomainCertificate.ValidNotAfter.ToShortDateString()
-                                        }),
-                                        recipients.ToArray());
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex, "Error sending certificate change notification email");
-                                }
-                            }
-
-                            // Mark the event as processed so it doesn't show up in the next query
-                            evt.DateProcessed = DateTime.UtcNow;
-                        }
+                        notificationService.SendDomainCertChangeNotification(notificationSettings, events);
 
                         // User notified, save the record
                         dataContext.SaveChanges();

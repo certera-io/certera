@@ -5,15 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Mail\Templates\NotificationCertificateAcquisitionFailure.html" />
-    <None Remove="Mail\Templates\NotificationCertificateChange.html" />
-    <None Remove="Mail\Templates\NotificationCertificateExpiration.html" />
+    <None Remove="Notifications\Templates\NotificationCertificateAcquisitionFailureEmail.html" />
+    <None Remove="Notifications\Templates\NotificationCertificateAcquisitionFailureSlack.json" />
+    <None Remove="Notifications\Templates\NotificationCertificateChangeEmail.html" />
+    <None Remove="Notifications\Templates\NotificationCertificateChangeSlack.json" />
+    <None Remove="Notifications\Templates\NotificationCertificateExpirationEmail.html" />
+    <None Remove="Notifications\Templates\NotificationCertificateExpirationSlack.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Mail\Templates\NotificationCertificateAcquisitionFailure.html" />
-    <EmbeddedResource Include="Mail\Templates\NotificationCertificateChange.html" />
-    <EmbeddedResource Include="Mail\Templates\NotificationCertificateExpiration.html" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateAcquisitionFailureEmail.html" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateAcquisitionFailureSlack.json" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateExpirationSlack.json" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateChangeSlack.json" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateChangeEmail.html" />
+    <EmbeddedResource Include="Notifications\Templates\NotificationCertificateExpirationEmail.html" />
   </ItemGroup>
 
   <ItemGroup>

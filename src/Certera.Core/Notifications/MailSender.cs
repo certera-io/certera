@@ -3,15 +3,21 @@ using MimeKit;
 using System;
 using System.Linq;
 
-namespace Certera.Core.Mail
+namespace Certera.Core.Notifications
 {
     public class MailSender : IDisposable
     {
         private MailSenderInfo _info;
         private SmtpClient _client;
+        private bool _initialized = false;
 
         public void Initialize(MailSenderInfo info)
         {
+            if (_initialized)
+            {
+                return;
+            }
+            _initialized = true;
             _info = info;
             _client = new SmtpClient();
         }

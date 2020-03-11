@@ -1,5 +1,4 @@
-﻿using Certera.Core.Extensions;
-using Certera.Core.Mail;
+﻿using Certera.Core.Notifications;
 using Certera.Data;
 using Certera.Data.Models;
 using Certera.Web.AcmeProviders;
@@ -7,9 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Certera.Web.Services
@@ -20,16 +17,16 @@ namespace Certera.Web.Services
         private readonly DataContext _dataContext;
         private readonly CertesAcmeProvider _certesAcmeProvider;
         private readonly IOptionsSnapshot<MailSenderInfo> _mailSenderInfo;
-        private readonly MailSender _mailSender;
+        private readonly NotificationService _notificationService;
 
         public CertificateAcquirer(ILogger<CertificateAcquirer> logger, DataContext dataContext, CertesAcmeProvider certesAcmeProvider,
-            IOptionsSnapshot<MailSenderInfo> mailSenderInfo, MailSender mailSender)
+            IOptionsSnapshot<MailSenderInfo> mailSenderInfo, NotificationService notificationService)
         {
             _logger = logger;
             _dataContext = dataContext;
             _certesAcmeProvider = certesAcmeProvider;
             _mailSenderInfo = mailSenderInfo;
-            _mailSender = mailSender;
+            _notificationService = notificationService;
         }
 
         public async Task<Data.Models.AcmeOrder> AcquireAcmeCert(long id, bool userRequested = false)
@@ -71,75 +68,22 @@ namespace Certera.Web.Services
 
             try
             {
-                if (string.IsNullOrWhiteSpace(_mailSenderInfo?.Value?.Host))
-                {
-                    _logger.LogWarning("SMTP not configured. Unable to send certificate change notifications.");
-                    return acmeOrder;
-                }
-
-                var usersToNotify = _dataContext.NotificationSettings
+                var notificationSettings = _dataContext.NotificationSettings
                         .Include(x => x.ApplicationUser)
-                        .Where(x => x.AcquisitionFailureAlerts == true);
-                _mailSender.Initialize(_mailSenderInfo.Value);
+                        .Where(x => x.AcquisitionFailureAlerts == true)
+                        .ToList();
 
-                foreach (var user in usersToNotify)
-                {
-                    var recipients = new List<string>();
-                    recipients.Add(user.ApplicationUser.Email);
-                    if (!string.IsNullOrWhiteSpace(user.AdditionalRecipients))
-                    {
-                        recipients.AddRange(user.AdditionalRecipients.Split(',', ';', StringSplitOptions.RemoveEmptyEntries));
-                    }
+                var lastValidAcmeOrder = _dataContext.AcmeOrders
+                    .Include(x => x.DomainCertificate)
+                    .Where(x => x.AcmeCertificateId == acmeOrder.AcmeCertificateId)
+                    .OrderByDescending(x => x.DateCreated)
+                    .FirstOrDefault(x => x.Status == AcmeOrderStatus.Completed);
 
-                    var lastValidAcmeOrder = _dataContext.AcmeOrders
-                        .Include(x => x.DomainCertificate)
-                        .Where(x => x.AcmeCertificateId == acmeOrder.AcmeCertificateId)
-                        .OrderByDescending(x => x.DateCreated)
-                        .FirstOrDefault(x => x.Status == AcmeOrderStatus.Completed);
-
-                    string previousCertText = string.Empty;
-                    string lastAcquiryText = "Never";
-
-                    if (lastValidAcmeOrder?.DomainCertificate != null)
-                    {
-                        lastAcquiryText = lastValidAcmeOrder.DateCreated.ToString();
-
-                        var thumbprint = lastValidAcmeOrder.DomainCertificate.Thumbprint;
-                        var publicKey = lastValidAcmeOrder.DomainCertificate.Certificate.PublicKeyPinningHash();
-                        var validFrom = lastValidAcmeOrder.DomainCertificate.ValidNotBefore.ToShortDateString();
-                        var validTo = lastValidAcmeOrder.DomainCertificate.ValidNotAfter.ToShortDateString();
-
-                        var sb = new StringBuilder();
-                        sb.AppendLine("<u>Current certificate details</u>");
-                        sb.AppendLine();
-                        sb.AppendLine("<b>Thumbprint</b>");
-                        sb.AppendLine($"{thumbprint}");
-                        sb.AppendLine();
-                        sb.AppendLine("<b>Public Key (hash)</b>");
-                        sb.AppendLine($"{publicKey}");
-                        sb.AppendLine();
-                        sb.AppendLine("<b>Valid</b>");
-                        sb.AppendLine($"{validFrom} to {validTo}");
-                        previousCertText = sb.ToString();
-                    }
-
-                    _logger.LogInformation($"Sending acquiry failure notification email for {acmeOrder.AcmeCertificate.Name}");
-
-                    _mailSender.Send($"[certera] {acmeOrder.AcmeCertificate.Name} - certificate acquisition failure notification",
-                        TemplateManager.BuildTemplate(TemplateManager.NotificationCertificateAcquisitionFailure,
-                        new
-                        {
-                            Domain = acmeOrder.AcmeCertificate.Subject,
-                            Error = acmeOrder.Errors,
-                            PreviousCertificateDetails = previousCertText,
-                            LastAcquiryText = lastAcquiryText
-                        }),
-                        recipients.ToArray());
-                }
+                _notificationService.SendCertAcquitionFailureNotification(notificationSettings, acmeOrder, lastValidAcmeOrder);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error sending certificate change notification email");
+                _logger.LogError(e, "Error sending certificate acquisition failure notification");
             }
             return acmeOrder;
         }

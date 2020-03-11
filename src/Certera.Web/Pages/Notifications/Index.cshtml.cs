@@ -31,7 +31,9 @@ namespace Certera.Web.Pages.Notifications
         {
             var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            NotificationSetting = await _context.NotificationSettings.FirstOrDefaultAsync(m => m.ApplicationUserId == userId);
+            NotificationSetting = await _context.NotificationSettings
+                .Include(x => x.ApplicationUser)
+                .FirstOrDefaultAsync(m => m.ApplicationUserId == userId);
 
             if (NotificationSetting == null)
             {
@@ -52,10 +54,10 @@ namespace Certera.Web.Pages.Notifications
                 return Page();
             }
 
+            _context.Attach(NotificationSetting).State = EntityState.Modified;
+
             var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             NotificationSetting.ApplicationUserId = userId;
-
-            _context.Attach(NotificationSetting).State = EntityState.Modified;
 
             try
             {
