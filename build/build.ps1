@@ -16,6 +16,20 @@ $ProjectPath = Join-Path -Path $RepoRoot "src\Certera.Web\Certera.Web.csproj"
 $PublishOutput = Join-Path -Path $RepoRoot "src\publish\$Runtime"
 $Profile = Join-Path -Path $RepoRoot "src\Certera.Web\Properties\PublishProfiles\template.pubxml"
 
+$CleanVersion = $Version
+$VersionSuffix = ""
+if ($Version.Contains('-')) {
+	$CleanVersion = $Version.Substring(0, $Version.IndexOf('-'))
+	$VersionSuffix = $Version.Substring($Version.IndexOf('-'))
+}
+
+# Set the version in the csproj
+$xml = [Xml] (Get-Content $ProjectPath)
+$xml.Project.PropertyGroup.Version = $CleanVersion
+$xml.Project.PropertyGroup.AssemblyVersion = $CleanVersion
+$xml.Project.PropertyGroup.FileVersion = $CleanVersion
+$xml.Save($ProjectPath);
+
 Write-Output "PublishOutput: $PublishOutput"
 Write-Output "Profile: $Profile"
 
@@ -36,6 +50,6 @@ if ($Runtime.StartsWith("win")) {
 	$ReadyToRun = "true"
 }
 
-dotnet publish $ProjectPath -c Release -o "$PublishOutput" /p:PublishProfile="$Profile" /p:Version=$Version /p:ReadyToRun=$ReadyToRun /p:RuntimeIdentifier=$Runtime
+dotnet publish $ProjectPath -c Release -o "$PublishOutput" /p:PublishProfile="$Profile" /p:Version=$Version /p:AssemblyVersion=$CleanVersion /p:FileVersion=$CleanVersion /p:ReadyToRun=$ReadyToRun /p:RuntimeIdentifier=$Runtime
 
 ./zip.ps1 $RepoRoot "$PublishOutput" $RunTime $Version
