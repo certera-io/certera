@@ -17,6 +17,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AcmeCertificate.AcmeCertificateId" />
             <div>
+                <label asp-for="AcmeCertificate.ChallengeType"></label>
+                <div>
+                    <small class="text-muted"><a href="https://letsencrypt.org/docs/challenge-types/">more info</a></small>
+                </div>
+
+                @await Component.InvokeAsync("ChallengeSelect", new { name = "AcmeCertificate.ChallengeType", selected = Model.AcmeCertificate.ChallengeType })
+            </div>
+            <div>
                 <label asp-for="AcmeCertificate.Name"></label>
                 <div>
                     <small class="text-muted">(e.g. prod-api-01)</small>

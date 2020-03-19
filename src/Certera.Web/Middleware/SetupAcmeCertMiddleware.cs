@@ -75,40 +75,32 @@ namespace Certera.Web.Middleware
         Initializing ACME client and ensuring account... <br />");
             certes.Initialize(acmeCert);
 
-
-
+            // Begin the order
             await httpContext.Response.WriteAsync($@"
         Creating order... <br />");
             var acmeOrder = await certes.BeginOrder();
             dataContext.AcmeOrders.Add(acmeOrder);
             dataContext.SaveChanges();
 
-
-
+            // Validate (i.e. ask ACME to check via HTTP-01 or DNS-01)
             await httpContext.Response.WriteAsync($@"
         Requesting ACME validation... <br />");
             await certes.Validate();
             dataContext.SaveChanges();
 
-
-
+            // Complete the order (i.e. obtain the certifiate)
             await httpContext.Response.WriteAsync($@"
         Completing order... (this can take up to 30 seconds)<br />");
             await certes.Complete();
 
-
-
+            // Remove old ACME requests because they're irrelevant
             await httpContext.Response.WriteAsync($@"
         Cleaning up... <br />");
             acmeOrder.AcmeRequests.Clear();
             dataContext.SaveChanges();
 
-
-
             await httpContext.Response.WriteAsync($@"
         Done. Status: {acmeOrder.Status}... <br />");
-
-
 
             bool restart = false;
             if (!acmeOrder.Completed)

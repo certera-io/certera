@@ -16,18 +16,71 @@
 <div class="content-wrapper">
     <partial name="_SmtpOptionsMissing" />
     <partial name="_StatusMessage" for="StatusMessage" />
-    <div class="row">
+    <div class="row">        
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h3>Certificate Renewal Settings</h3>
             <div>
                 <label>Days before expiration to renew certificate</label>
                 <input type="number" asp-for="RenewCertificateDays" />
                 <span asp-validation-for="RenewCertificateDays" class="text-danger"></span>
             </div>
+
+            <div>
+                <button type="submit" class="button-small">Save</button>
+            </div>
+
+            <hr />
+
+            <h3>DNS-01 Challenge Settings</h3>
+            <p>
+                If you wish to use DNS-01 challenge, you must have values defined in both set and cleanup script options below.
+                The script must use 0 as the exit code for successfully setting the DNS record.<br />
+                <br />
+                Environment variables are optional and will be set for both set and cleanup scripts before executing them.
+            </p>
+
+            <div>
+                <label>Environment Variables (one per line in the format of VARIABLE_NAME=VALUE)</label>
+                <textarea class="form-control" asp-for="DnsScriptEnvironmentVariables"></textarea>
+                <span asp-validation-for="DnsScriptEnvironmentVariables" class="text-danger"></span>
+            </div>
+
+            <p>
+                Available parameters for the script:<br />
+                <b>{{Domain}}</b> - The domain of the certificate being requested (e.g. mysite.com)<br />
+                <b>{{Record}}</b> - The record name to create (e.g. _acme-challenge or _acme-challenge.subdomain)<br />
+                <b>{{Value}}</b>  - The token obtained from an ACME authorization request
+            </p>
+
+            <div>
+                <label>Set DNS record script</label>
+                <input asp-for="SetScript" />
+                <span asp-validation-for="SetScript" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Set script arguments</label>
+                <input asp-for="SetScriptArguments" />
+                <span asp-validation-for="SetScriptArguments" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Cleanup DNS record script</label>
+                <input asp-for="CleanupScript" />
+                <span asp-validation-for="CleanupScript" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Cleanup script arguments</label>
+                <input asp-for="CleanupScriptArguments" />
+                <span asp-validation-for="CleanupScriptArguments" class="text-danger"></span>
+            </div>
+
             <div>
                 <button type="submit" class="button-small">Save</button>
             </div>
         </form>
+
+        <hr />
+
         <h3>SMTP</h3>
         <dl>
             <dt>

@@ -5,6 +5,7 @@ using Certera.Web.Authentication;
 using Certera.Web.Middleware;
 using Certera.Web.Options;
 using Certera.Web.Services;
+using Certera.Web.Services.Dns;
 using Certera.Web.Services.HostedServices;
 using DnsClient;
 using Microsoft.AspNetCore.Antiforgery;
@@ -46,6 +47,7 @@ namespace Certera.Web
             services.ConfigureWritable<MailSenderInfo>(Configuration.GetSection("SMTP"));
             services.ConfigureWritable<Setup>(Configuration.GetSection("Setup"));
             services.Configure<AllowedRemoteIPAddresses>(Configuration.GetSection("AllowedRemoteIPAddresses"));
+            services.Configure<DnsServers>(Configuration.GetSection("DnsServers"));
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -81,6 +83,10 @@ namespace Certera.Web
             var lookupClient = new LookupClient();
             services.AddSingleton<ILookupClient>(lookupClient);
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            services.AddTransient<LookupClientProvider>();
+            services.AddTransient<DnsVerifier>();
+
             services.AddHttpClient();
 
             // Background services

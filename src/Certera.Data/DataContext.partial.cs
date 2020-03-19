@@ -375,7 +375,7 @@ namespace Certera.Data
                 Settings.Add(new Setting
                 {
                     Name = setting.ToString(),
-                    Value = @default.ToString()
+                    Value = @default?.ToString()
                 });
 
                 SaveChanges();
@@ -398,22 +398,47 @@ namespace Certera.Data
                 Settings.Add(new Setting
                 {
                     Name = setting.ToString(),
-                    Value = value.ToString()
+                    Value = value?.ToString()
                 });
             }
             // Update, if exists
             else
             {
-                settingRecord.Value = value.ToString();
+                settingRecord.Value = value?.ToString();
             }
 
             SaveChanges();
+        }
+
+        public DnsSettingsContainer GetDnsSettings()
+        {
+            var settings = Settings.ToDictionary(x => x.Name, x => x.Value);
+
+            settings.TryGetValue(Data.Settings.Dns01SetEnvironmentVariables.ToString(), out var envVars);
+            settings.TryGetValue(Data.Settings.Dns01SetScript.ToString(), out var setScript);
+            settings.TryGetValue(Data.Settings.Dns01CleanupScript.ToString(), out var cleanupScript);
+            settings.TryGetValue(Data.Settings.Dns01SetScriptArguments.ToString(), out var setScriptArgs);
+            settings.TryGetValue(Data.Settings.Dns01CleanupScriptArguments.ToString(), out var cleanupScriptArgs);
+
+            return new DnsSettingsContainer
+            {
+                DnsEnvironmentVariables = envVars,
+                DnsSetupScript = setScript,
+                DnsCleanupScript = cleanupScript,
+                DnsSetupScriptArguments = setScriptArgs,
+                DnsCleanupScriptArguments = cleanupScriptArgs
+            };
         }
     }
 
     public enum Settings
     {
-        RenewCertificateDays = 0
+        RenewCertificateDays = 0,
+        Dns01SetEnvironmentVariables = 1,
+        Dns01SetScript = 2,
+        Dns01CleanupScript = 3,
+        Dns01SetScriptArguments = 4,
+        Dns01CleanupScriptArguments = 5
     }
 
     public class AcmeCertOrderContainer

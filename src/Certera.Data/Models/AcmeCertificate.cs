@@ -33,7 +33,8 @@ namespace Certera.Data.Models
 
         public Key Key { get; set; }
 
-        [RegularExpression("http-01")]
+        [Display(Name = "ACME Challenge Type")]
+        [RegularExpression("http-01|dns-01")]
         public string ChallengeType { get; set; }
 
         [Display(Name = "Country (C)")]
@@ -68,5 +69,10 @@ namespace Certera.Data.Models
 
         [NotMapped]
         public AcmeOrder LatestValidAcmeOrder { get; set; }
+
+        public bool IsDnsChallengeType()
+        {
+            return string.Equals(ChallengeType, "dns-01", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

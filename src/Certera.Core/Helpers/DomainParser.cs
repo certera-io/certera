@@ -35,5 +35,15 @@ namespace Certera.Core.Helpers
 
             return null;
         }
+
+        public static string GetTld(string fullDomain)
+        {
+            return _domainParser.Get(fullDomain).TLD;
+        }
+
+        public static string Subdomain(string fullDomain)
+        {
+            return _domainParser.Get(fullDomain).SubDomain;
+        }
     }
 }

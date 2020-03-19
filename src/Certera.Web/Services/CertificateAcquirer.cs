@@ -1,10 +1,8 @@
-﻿using Certera.Core.Notifications;
-using Certera.Data;
+﻿using Certera.Data;
 using Certera.Data.Models;
 using Certera.Web.AcmeProviders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,20 +14,18 @@ namespace Certera.Web.Services
         private readonly ILogger<CertificateAcquirer> _logger;
         private readonly DataContext _dataContext;
         private readonly CertesAcmeProvider _certesAcmeProvider;
-        private readonly IOptionsSnapshot<MailSenderInfo> _mailSenderInfo;
         private readonly NotificationService _notificationService;
 
         public CertificateAcquirer(ILogger<CertificateAcquirer> logger, DataContext dataContext, CertesAcmeProvider certesAcmeProvider,
-            IOptionsSnapshot<MailSenderInfo> mailSenderInfo, NotificationService notificationService)
+            NotificationService notificationService)
         {
             _logger = logger;
             _dataContext = dataContext;
             _certesAcmeProvider = certesAcmeProvider;
-            _mailSenderInfo = mailSenderInfo;
             _notificationService = notificationService;
         }
 
-        public async Task<Data.Models.AcmeOrder> AcquireAcmeCert(long id, bool userRequested = false)
+        public async Task<AcmeOrder> AcquireAcmeCert(long id, bool userRequested = false)
         {
             var acmeCert = await _dataContext.AcmeCertificates
                 .Include(x => x.Key)
@@ -37,23 +33,53 @@ namespace Certera.Web.Services
                 .ThenInclude(x => x.Key)
                 .SingleAsync(x => x.AcmeCertificateId == id);
 
+            var dnsSettings = _dataContext.GetDnsSettings();
+
             _logger.LogDebug($"[{acmeCert.Subject}] - starting certificate acquisition");
             _certesAcmeProvider.Initialize(acmeCert);
 
-            _logger.LogDebug($"[{acmeCert.Subject}] - creating order");
+            _logger.LogDebug($"[{acmeCert.Subject}] - creating ACME order");
             var acmeOrder = await _certesAcmeProvider.BeginOrder();
             _dataContext.AcmeOrders.Add(acmeOrder);
             _dataContext.SaveChanges();
-            
-            _logger.LogDebug($"[{acmeCert.Subject}] - requestion ACME validation");
-            await _certesAcmeProvider.Validate();
-            _dataContext.SaveChanges();
-            
-            _logger.LogDebug($"[{acmeCert.Subject}] - completing order");
-            await _certesAcmeProvider.Complete();
-            acmeOrder.AcmeRequests.Clear();
-            _dataContext.SaveChanges();
-            
+
+            try
+            {
+                if (acmeCert.IsDnsChallengeType())
+                {
+                    _logger.LogDebug($"[{acmeCert.Subject}] - setting DNS records");
+                    var dnsSetResult = _certesAcmeProvider.SetDnsRecords(dnsSettings);
+
+                    if (dnsSetResult)
+                    {
+                        _logger.LogDebug($"[{acmeCert.Subject}] - validating DNS records");
+                        var dnsValidateResult = await _certesAcmeProvider.ValidateDnsRecords();
+                    }
+                }
+
+                _logger.LogDebug($"[{acmeCert.Subject}] - requesting ACME validation");
+                await _certesAcmeProvider.Validate();
+                _dataContext.SaveChanges();
+
+                _logger.LogDebug($"[{acmeCert.Subject}] - completing order");
+                await _certesAcmeProvider.Complete();
+
+                if (acmeCert.IsDnsChallengeType())
+                {
+                    _logger.LogDebug($"[{acmeCert.Subject}] - cleaning up DNS records");
+                    _certesAcmeProvider.CleanupDnsRecords(dnsSettings);
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                acmeOrder.AcmeRequests.Clear();
+                _dataContext.SaveChanges();
+            }
+
             if (!acmeOrder.Completed)
             {
                 _logger.LogError($"[{acmeCert.Subject}] - error obtaining certificate: {acmeOrder.Errors}");
@@ -85,6 +111,7 @@ namespace Certera.Web.Services
             {
                 _logger.LogError(e, "Error sending certificate acquisition failure notification");
             }
+
             return acmeOrder;
         }
     }

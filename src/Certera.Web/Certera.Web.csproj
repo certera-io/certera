@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-Certera.Web-5A368144-3DE0-4512-9F6D-C55B403FAC22</UserSecretsId>
@@ -12,16 +11,14 @@
     <Copyright>https://docs.certera.io/#license</Copyright>
     <PackageProjectUrl>https://certera.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/certera-io/certera</RepositoryUrl>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
-    <FileVersion>1.5.0.0</FileVersion>
-    <Version>1.5.0</Version>
-    <PackageReleaseNotes>Slack notifications</PackageReleaseNotes>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0</FileVersion>
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>Supports DNS-01 challenge type</PackageReleaseNotes>
   </PropertyGroup>
-  
   <ItemGroup>
     <TrimmerRootAssembly Include="System.Linq.Parallel" />
   </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="Certes" Version="2.3.3" />
@@ -51,11 +48,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
     <PackageReference Include="Nager.PublicSuffix" Version="1.5.0" />
   </ItemGroup>
-
-
   <ItemGroup>
     <ProjectReference Include="..\Certera.Core\Certera.Core.csproj" />
     <ProjectReference Include="..\Certera.Data\Certera.Data.csproj" />
   </ItemGroup>
-
 </Project>
