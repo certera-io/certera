@@ -16,6 +16,7 @@ namespace Certera.Core.Helpers
         /// VAR1=ABC \
         /// VAR2=DEF \
         /// 
+        /// With a newline at end so commands can easily be appended
         /// </summary>
         public static string ToNixEnvVars(string envVars)
         {
@@ -34,6 +35,7 @@ namespace Certera.Core.Helpers
                     }
                     sb.AppendLine();
                 }
+                formatted = sb.ToString();
             }
             return formatted;
         }
