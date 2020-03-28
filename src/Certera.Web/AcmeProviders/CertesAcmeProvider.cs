@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Certera.Web.Services.Dns;
 using Certera.Core.Helpers;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Certera.Web.AcmeProviders
 {
@@ -201,7 +202,7 @@ namespace Certera.Web.AcmeProviders
 
                 var exitCode = RunProcess(dnsSettings.DnsSetupScript,
                     transformedArgs,
-                    dnsSettings.TransformEnvironmentVariables());
+                    dnsSettings.DnsEnvironmentVariables);
                 exitCodes.Add(exitCode);
             }
 
@@ -242,17 +243,23 @@ namespace Certera.Web.AcmeProviders
 
                 var exitCode = RunProcess(dnsSettings.DnsCleanupScript,
                     transformedArgs,
-                    dnsSettings.TransformEnvironmentVariables());
+                    dnsSettings.DnsEnvironmentVariables);
                 exitCodes.Add(exitCode);
             }
 
             return exitCodes.Any(x => x != 0);
         }
 
-        private int RunProcess(string file, string args, List<KeyValuePair<string, string>> envVars)
+        private int RunProcess(string file, string args, string envVars)
         {
             try
             {
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                if (!isWindows)
+                {
+                    file = EnvironmentVariableHelper.ToNixEnvVars(envVars) + file;
+                }
+
                 var process = new Process()
                 {
                     StartInfo = new ProcessStartInfo
@@ -266,9 +273,14 @@ namespace Certera.Web.AcmeProviders
                     }
                 };
 
-                foreach (var kv in envVars)
+                if (isWindows)
                 {
-                    process.StartInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                    var transformed = EnvironmentVariableHelper.ToKeyValuePair(envVars);
+                    // Only works for windows.
+                    foreach (var kv in transformed)
+                    {
+                        process.StartInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                    }
                 }
 
                 using (process)
