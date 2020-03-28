@@ -103,6 +103,8 @@ namespace Certera.Web.AcmeProviders
                 domains.AddRange(sans);
             }
 
+            domains = domains.Distinct().ToList();
+
             _acmeOrder = new AcmeOrder
             {
                 AcmeCertificate = _acmeCertificate,
@@ -188,17 +190,7 @@ namespace Certera.Web.AcmeProviders
 
             foreach (var req in _acmeOrder.AcmeRequests)
             {
-                var registrableDomain = DomainParser.RegistrableDomain(req.Domain);
-                var subdomain = "_acme-challenge";
-                if (!string.IsNullOrWhiteSpace(subdomain))
-                {
-                    subdomain = subdomain + "." + DomainParser.Subdomain(req.Domain);
-                }
-
-                var transformedArgs = dnsSettings.DnsSetupScriptArguments?
-                   .Replace("{{Domain}}", registrableDomain)
-                   .Replace("{{Record}}", subdomain)
-                   .Replace("{{Value}}", req.DnsTxtValue);
+                string transformedArgs = GenerateScriptArgs(dnsSettings.DnsSetupScriptArguments, req);
 
                 var exitCode = RunProcess(dnsSettings.DnsSetupScript,
                     transformedArgs,
@@ -207,6 +199,22 @@ namespace Certera.Web.AcmeProviders
             }
 
             return exitCodes.Any(x => x != 0);
+        }
+
+        public static string GenerateScriptArgs(string scriptArgs, AcmeRequest req)
+        {
+            var fullRecord = "_acme-challenge" + "." + req.Domain;
+            var registrableDomain = DomainParser.RegistrableDomain(req.Domain);
+            var subdomain = "_acme-challenge" + "." + DomainParser.Subdomain(req.Domain);
+
+            var transformedArgs = scriptArgs?
+               .Replace("{{FullRecord}}", fullRecord)
+               .Replace("{{Subject}}", req.Domain)
+               .Replace("{{Domain}}", registrableDomain)
+               .Replace("{{Record}}", subdomain)
+               .Replace("{{Value}}", req.DnsTxtValue);
+
+            return transformedArgs;
         }
 
         public async Task<bool> ValidateDnsRecords()
@@ -229,17 +237,7 @@ namespace Certera.Web.AcmeProviders
 
             foreach (var req in _acmeOrder.AcmeRequests)
             {
-                var registrableDomain = DomainParser.RegistrableDomain(req.Domain);
-                var subdomain = "_acme-challenge";
-                if (!string.IsNullOrWhiteSpace(subdomain))
-                {
-                    subdomain = subdomain + "." + DomainParser.Subdomain(req.Domain);
-                }
-
-                var transformedArgs = dnsSettings.DnsCleanupScriptArguments?
-                   .Replace("{{Domain}}", registrableDomain)
-                   .Replace("{{Record}}", subdomain)
-                   .Replace("{{Value}}", req.DnsTxtValue);
+                string transformedArgs = GenerateScriptArgs(dnsSettings.DnsCleanupScriptArguments, req);
 
                 var exitCode = RunProcess(dnsSettings.DnsCleanupScript,
                     transformedArgs,

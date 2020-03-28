@@ -48,9 +48,11 @@
 
             <p>
                 Available parameters for the script:<br />
-                <b>{{Domain}}</b> - The domain of the certificate being requested (e.g. mysite.com)<br />
-                <b>{{Record}}</b> - The record name to create (e.g. _acme-challenge or _acme-challenge.subdomain)<br />
-                <b>{{Value}}</b> - The value to place in the DNS record (this is the token that will be verified by ACME)
+                <b>{{FullRecord}}</b> - The full record (e.g. _acme-challenge.www.dev.mysite.com)<br />
+                <b>{{Subject}}</b> - The domain for which the certificate is being obtained (e.g. www.dev.mysite.com)<br />
+                <b>{{Domain}}</b> - The registrable domain of the certificate being requested (e.g. mysite.com)<br />
+                <b>{{Record}}</b> - The TXT record name to create (e.g. _acme-challenge.www.dev)<br />
+                <b>{{Value}}</b> - The value to place in the TXT DNS record (this is the token that will be verified by ACME)
             </p>
 
             <div>
