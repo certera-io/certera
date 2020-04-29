@@ -36,7 +36,9 @@ namespace Certera.Web.Services
                 DateCreated = DateTime.UtcNow,
                 Name = name,
                 Description = description,
-                RawData = keyContents
+                RawData = keyContents,
+                ApiKey1 = ApiKeyGenerator.CreateApiKey(),
+                ApiKey2 = ApiKeyGenerator.CreateApiKey()
             };
 
             _dataContext.Keys.Add(key);
