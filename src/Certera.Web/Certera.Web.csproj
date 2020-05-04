@@ -11,9 +11,9 @@
     <Copyright>https://docs.certera.io/#license</Copyright>
     <PackageProjectUrl>https://certera.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/certera-io/certera</RepositoryUrl>
-    <AssemblyVersion>2.0.1</AssemblyVersion>
-    <FileVersion>2.0.1</FileVersion>
-    <Version>2.0.1</Version>
+    <AssemblyVersion>2.0.2</AssemblyVersion>
+    <FileVersion>2.0.2</FileVersion>
+    <Version>2.0.2</Version>
     <PackageReleaseNotes>Supports DNS-01 challenge type</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

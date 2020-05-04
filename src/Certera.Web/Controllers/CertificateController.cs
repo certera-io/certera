@@ -23,7 +23,7 @@ namespace Certera.Web.Controllers
 
         [HttpGet("{name}")]
         public IActionResult Index(string name, string pfxPassword, bool staging = false,
-            string format = "pem")
+            string format = "pem", bool chain = true)
         {
             if (string.Equals(format, "pfx", StringComparison.OrdinalIgnoreCase) &&
                 string.IsNullOrWhiteSpace(pfxPassword))
@@ -66,9 +66,11 @@ namespace Certera.Web.Controllers
                     };
                 case "pem":
                 default:
+                    var content = chain ? acmeCert.LatestValidAcmeOrder.RawDataPem :
+                        new CertificateChain(acmeCert.LatestValidAcmeOrder.RawDataPem).Certificate.ToPem();
                     return new ContentResult
                     {
-                        Content = acmeCert.LatestValidAcmeOrder.RawDataPem,
+                        Content = content,
                         ContentType = "text/plain",
                         StatusCode = 200
                     };
