@@ -1,18 +1,18 @@
-﻿using Certes;
+﻿using Certera.Core.Helpers;
+using Certera.Data.Models;
+using Certera.Web.Services.Dns;
+using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Certera.Data.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using Certera.Web.Services.Dns;
-using Certera.Core.Helpers;
-using System.Text;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Certera.Web.AcmeProviders
 {
@@ -457,6 +457,11 @@ namespace Certera.Web.AcmeProviders
                 _acmeOrder.Errors = "Unknown Error";
             }
             return _acmeOrder;
+        }
+
+        public async Task Revoke(byte[] cert, RevocationReason reason)
+        {
+            await _acmeContext.RevokeCertificate(cert, reason, null);
         }
     }
 

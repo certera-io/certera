@@ -16,89 +16,112 @@
         <a class="button button-small" asp-page="./Edit" asp-route-id="@Model.AcmeCertificate.AcmeCertificateId">Edit</a>
         <a class="button button-small" href="/certificates/request/@Model.AcmeCertificate.AcmeCertificateId?returnUrl=@Url.Page("./History")">Request Now</a>
     </div>
-    <div class="row space-bottom">
+    <div class="row space-bottom">     
+        <h3>@Model.AcmeCertificate.Name</h3>
+        <h4>Subject: @Model.AcmeCertificate.Subject</h4>
+        <div>
+            <dl>
+                <dt>
+                    @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey1)
+                </dt>
+                <dd>
+                    <div>
+                        @Html.DisplayFor(model => model.AcmeCertificate.ApiKey1)
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                        <input type="hidden" name="action" value="keychange" />
+                        <input type="hidden" name="key" value="apikey1" />
+                        <button type="submit" class="button-small">Change</button>
+                    </form>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey2)
+                </dt>
+                <dd>
+                    <div>
+                        @Html.DisplayFor(model => model.AcmeCertificate.ApiKey2)
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                        <input type="hidden" name="action" value="keychange" />
+                        <input type="hidden" name="key" value="apikey2" />
+                        <button type="submit" class="button-small">Change</button>
+                    </form>
+                </dd>
+            </dl>
+        </div>
+
+        <div>
+            <div>OCSP Status: @(Model.OcspStatus ?? "click to request")</div>
+            <form method="post">
+                <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                <input type="hidden" name="action" value="ocspcheck" />
+                <button type="submit" class="button-small">Check OCSP Status</button>
+            </form>
+
+            <div>Revoke Certificate</div>
+            <form method="post">
+                <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
+                <input type="hidden" name="action" value="revoke" />
+                <select asp-for="RevocationReason">
+                    @foreach (var e in Enum.GetValues(typeof(Certes.Acme.Resource.RevocationReason)))
+                    {
+                        @:<option value="@Html.Raw(e.ToString())">@Html.Raw(e.ToString())</option>
+                    }
+                </select>
+                <button type="submit" class="button-small">Revoke Certificate</button>
+            </form>            
+        </div>
+
         @if (Model.AcmeCertificate.AcmeOrders.IsNullOrEmpty())
         {
-            <p>
-                No certificate orders
-            </p>
+        <p>
+            No certificate orders
+        </p>
         }
         else
         {
-            <h3>@Model.AcmeCertificate.Name</h3>
-            <h4>Subject: @Model.AcmeCertificate.Subject</h4>
-
-            <div>
-                <dl>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey1)
-                    </dt>
-                    <dd>
-                        <div>
-                            @Html.DisplayFor(model => model.AcmeCertificate.ApiKey1)
-                        </div>
-                        <form method="post">
-                            <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
-                            <input type="hidden" name="key" value="apikey1" />
-                            <button type="submit" class="button-small">Change</button>
-                        </form>
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.AcmeCertificate.ApiKey2)
-                    </dt>
-                    <dd>
-                        <div>
-                            @Html.DisplayFor(model => model.AcmeCertificate.ApiKey2)
-                        </div>
-                        <form method="post">
-                            <input type="hidden" name="id" value="@Model.AcmeCertificate.AcmeCertificateId" />
-                            <input type="hidden" name="key" value="apikey2" />
-                            <button type="submit" class="button-small">Change</button>
-                        </form>
-                    </dd>
-                </dl>
-            </div>
-
-            <table>
-                <thead>
+        <table>
+            <thead>
+                <tr>
+                    <th>Created</th>
+                    <th>Thumbprint</th>
+                    <th>Valid</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.AcmeCertificate.AcmeOrders.OrderByDescending(x => x.DateCreated))
+                {
                     <tr>
-                        <th>Created</th>
-                        <th>Thumbprint</th>
-                        <th>Valid</th>
-                        <th>Status</th>
+                        <td data-title="Created">
+                            <div>
+                                @order.DateCreated.ToLocalTime().ToString()
+                            </div>
+                        </td>
+                        <td data-title="Thumbprint">
+                            @if (!string.IsNullOrWhiteSpace(order.DomainCertificate?.Thumbprint))
+                            {
+                                <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
+                            }
+                        </td>
+                        <td data-title="Valid">
+                            @if (order.DomainCertificate != null)
+                            {
+                                @order.DomainCertificate.ValidNotBefore.ToUniversalTime().ToString("yyyy-MM-dd")
+                                @:to
+                                @order.DomainCertificate.ValidNotAfter.ToUniversalTime().ToString("yyyy-MM-dd")
+                            }
+                        </td>
+                        <td data-title="Status">
+                            @Html.Raw(StatusBadge(order))
+                            @order.Errors?.Replace("\r\n", "<br />")
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model.AcmeCertificate.AcmeOrders.OrderByDescending(x => x.DateCreated))
-                    {
-                        <tr>
-                            <td data-title="Created">
-                                <div>
-                                    @order.DateCreated.ToLocalTime().ToString()
-                                </div>
-                            </td>
-                            <td data-title="Thumbprint">
-                                @if (!string.IsNullOrWhiteSpace(order.DomainCertificate?.Thumbprint))
-                                {
-                                    <span class="badge badge-dark">@order.DomainCertificate?.Thumbprint</span>
-                                }
-                            </td>
-                            <td data-title="Valid">
-                                @if (order.DomainCertificate != null)
-                                {
-                                    @order.DomainCertificate.ValidNotBefore.ToUniversalTime().ToString("yyyy-MM-dd")
-                                    @:to
-                                    @order.DomainCertificate.ValidNotAfter.ToUniversalTime().ToString("yyyy-MM-dd")
-                                }
-                            </td>
-                            <td data-title="Status">
-                                @Html.Raw(StatusBadge(order))
-                                @order.Errors?.Replace("\r\n", "<br />")
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                }
+            </tbody>
+        </table>
         }
     </div>
 </div>

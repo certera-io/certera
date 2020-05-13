@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Certera.Data.Models
 {
@@ -69,6 +71,11 @@ namespace Certera.Data.Models
 
         [NotMapped]
         public AcmeOrder LatestValidAcmeOrder { get; set; }
+
+        public AcmeOrder GetLatestValidAcmeOrder()
+        {
+            return AcmeOrders.Where(x => x.Status == AcmeOrderStatus.Completed).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+        }
 
         public bool IsDnsChallengeType()
         {
