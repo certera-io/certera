@@ -223,6 +223,7 @@ select {
 .content-wrapper {
     padding-left: 1em;
     margin-right: 3.3em;
+    margin-bottom: 50px;
 }
 
 @media (max-width: 640px) {
