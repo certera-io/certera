@@ -98,5 +98,14 @@
                 @MailSenderInfo.Value.Port
             </dd>
         </dl>
+        
+        <form method="post">
+            <div>
+                <label>Test email recipients</label>
+                <input asp-for="Recipients" />
+                <span asp-validation-for="Recipients" class="text-danger"></span>
+            </div>
+            <button type="submit" asp-page-handler="SendTestEmail" class="button-small">Send Test Email</button>
+        </form>
     </div>
 </div>
