@@ -76,8 +76,6 @@ namespace Certera.Web.Pages.Keys
             return RedirectToPage("./Index");
         }
 
-
-
         public async Task<IActionResult> OnPostRotateKeyAsync(long id, string key)
         {
             // To not get validation errors due to other post handler
@@ -104,7 +102,7 @@ namespace Certera.Web.Pages.Keys
 
             return Page();
         }
-        
+
         private bool KeyExists(long id)
         {
             return _context.Keys.Any(e => e.KeyId == id);
