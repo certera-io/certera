@@ -1,5 +1,6 @@
 ﻿using Certera.Core.Helpers;
 using Certera.Data.Models;
+using Certera.Web.Services;
 using Certera.Web.Services.Dns;
 using Certes;
 using Certes.Acme;
@@ -7,18 +8,14 @@ using Certes.Acme.Resource;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Certera.Web.AcmeProviders
 {
     public class CertesAcmeProvider
     {
-        private const int PROCESS_WAIT_MS = 60000;
         private AcmeContext _acmeContext;
         private Data.Models.AcmeCertificate _acmeCertificate;
         private IOrderContext _order;
@@ -252,58 +249,12 @@ namespace Certera.Web.AcmeProviders
         {
             try
             {
-                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                if (!isWindows)
-                {
-                    file = EnvironmentVariableHelper.ToNixEnvVars(envVars) + file;
-                }
+                var runner = new ProcessRunner();
+                var (exitCode, output) = runner.Run(file, args, EnvironmentVariableHelper.ToKeyValuePair(envVars));
 
-                var process = new Process()
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = file,
-                        Arguments = args,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    }
-                };
-
-                if (isWindows)
-                {
-                    var transformed = EnvironmentVariableHelper.ToKeyValuePair(envVars);
-                    // Only works for windows.
-                    foreach (var kv in transformed)
-                    {
-                        process.StartInfo.EnvironmentVariables[kv.Key] = kv.Value;
-                    }
-                }
-
-                using (process)
-                {
-                    process.Start();
-                    var stdout = new StringBuilder();
-                    var stderr = new StringBuilder();
-
-                    process.OutputDataReceived += (sender, outputLine) => { if (outputLine.Data != null) stdout.AppendLine(outputLine.Data); };
-                    process.ErrorDataReceived += (sender, errorLine) => { if (errorLine.Data != null) stderr.AppendLine(errorLine.Data); };
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-
-                    var exited = process.WaitForExit(PROCESS_WAIT_MS);
-                    if (!exited)
-                    {
-                        process.Kill(true);
-                    }
-
-                    _logger.LogDebug($"Process completed with exit code {process.ExitCode}");
-                    _logger.LogDebug($"Process stdout:{Environment.NewLine}{stdout}");
-                    _logger.LogDebug($"Process stderr:{Environment.NewLine}{stderr}");
-
-                    return process.ExitCode;
-                }
+                _logger.LogDebug($"Process completed with exit code {exitCode}");
+                _logger.LogDebug($"Process output:{Environment.NewLine}{output}");
+                return exitCode;
             }
             catch (Exception e)
             {
@@ -368,7 +319,7 @@ namespace Certera.Web.AcmeProviders
                 foreach (var cc in _authChallengeContainers)
                 {
                     var status = cc.AuthorizationTask.Result.Status;
-                    var completed = status == AuthorizationStatus.Valid || 
+                    var completed = status == AuthorizationStatus.Valid ||
                                     status == AuthorizationStatus.Invalid;
                     if (!completed)
                     {
@@ -400,7 +351,7 @@ namespace Certera.Web.AcmeProviders
             {
                 cc.Authorization = cc.AuthorizationTask.Result;
             }
-            
+
             // At this point, they're all complete and need to see which are valid/invalid
             // and obtain the cert if possible.
             try
