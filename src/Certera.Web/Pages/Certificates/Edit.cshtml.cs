@@ -89,6 +89,7 @@ namespace Certera.Web.Pages.Certificates
             cert.KeyId = AcmeCertificate.KeyId;
             cert.Subject = AcmeCertificate.Subject;
             cert.SANs = AcmeCertificate.SANs;
+            cert.ChallengeType = AcmeCertificate.ChallengeType;
 
             try
             {
