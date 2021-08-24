@@ -26,7 +26,7 @@ namespace Certera.Core.Notifications
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(_info.FromName, _info.FromEmail));
-            message.To.AddRange(recipients.Select(x => new MailboxAddress(x)));
+            message.To.AddRange(recipients.Select(x => MailboxAddress.Parse(x)));
             message.Subject = subject;
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {

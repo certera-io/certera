@@ -23,8 +23,12 @@ namespace Certera.Web.Services.Dns
         public LookupClientWrapper(IPAddress ipAddress, LookupClientProvider provider)
         {
             _ipAddress = ipAddress;
-            LookupClient = new LookupClient(ipAddress);
-            LookupClient.UseCache = false;
+
+            var options = new LookupClientOptions(ipAddress);
+            options.UseCache = false;
+
+            LookupClient = new LookupClient(options);
+
             _provider = provider;
         }
 

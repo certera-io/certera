@@ -124,7 +124,7 @@ namespace Certera.Web.Services.Dns
                     remainingParts = remainingParts.Reverse();
 
                     var digDeeper = true;
-                    IEnumerable<IPAddress>? ipSet = null;
+                    IEnumerable<IPAddress> ipSet = null;
                     do
                     {
                         // Partial result caching

@@ -29,7 +29,7 @@ namespace Certera.Core.Helpers
 
             if (_domainParser.IsValidDomain(host))
             {
-                var domain = _domainParser.Get(host);
+                var domain = _domainParser.Parse(host);
                 return domain.RegistrableDomain;
             }
 
@@ -38,12 +38,12 @@ namespace Certera.Core.Helpers
 
         public static string GetTld(string fullDomain)
         {
-            return _domainParser.Get(fullDomain).TLD;
+            return _domainParser.Parse(fullDomain).TLD;
         }
 
         public static string Subdomain(string fullDomain)
         {
-            return _domainParser.Get(fullDomain).SubDomain;
+            return _domainParser.Parse(fullDomain).SubDomain;
         }
     }
 }

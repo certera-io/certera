@@ -42,7 +42,7 @@ If ($FileExists -eq $False) {
 }
 
 # Restore NuGet packages
-.\nuget.exe restore $SolutionPath
+dotnet restore $SolutionPath
 
 # TODO: use PS Core and $IsLinux, $IsWindows, etc.
 $ReadyToRun = "false"
